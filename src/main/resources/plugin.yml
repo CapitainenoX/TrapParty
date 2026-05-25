@@ -5,7 +5,7 @@ api-version: '26.1'
 authors: [CapitainenoX]
 description: Premium Trap Survival mini-game — targets MC 26.1.2 (Tiny Takeover).
 website: https://github.com/CapitainenoX/TrapParty
-softdepend: [Multiverse-Core, PlaceholderAPI]
+softdepend: [Multiverse-Core, PlaceholderAPI, Vault]
 
 commands:
   trapparty:

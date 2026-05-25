@@ -9,6 +9,7 @@ import fr.trapparty.commands.TrapPartyCommand;
 import fr.trapparty.compat.VersionAdapter;
 import fr.trapparty.config.ConfigManager;
 import fr.trapparty.config.MessagesManager;
+import fr.trapparty.economy.EconomyService;
 import fr.trapparty.events.EventManager;
 import fr.trapparty.game.GameManager;
 import fr.trapparty.items.SpecialItemManager;
@@ -42,6 +43,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
     private TrapManager trapManager;
     private EventManager eventManager;
     private SpecialItemManager specialItemManager;
+    private EconomyService economyService;
     private StatsManager statsManager;
     private GameManager gameManager;
     private ScoreboardManager scoreboardManager;
@@ -59,6 +61,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
         this.configManager = new ConfigManager(this);
         this.messagesManager = new MessagesManager(this);
 
+        this.economyService = new EconomyService(this);
         this.statsManager = new StatsManager(this);
         this.kitManager = new KitManager(this);
         this.shopManager = new ShopManager(this);
@@ -145,6 +148,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
     public TrapManager traps() { return trapManager; }
     public EventManager events() { return eventManager; }
     public SpecialItemManager specialItems() { return specialItemManager; }
+    public EconomyService economy() { return economyService; }
     public StatsManager stats() { return statsManager; }
     public GameManager games() { return gameManager; }
     public ScoreboardManager scoreboards() { return scoreboardManager; }

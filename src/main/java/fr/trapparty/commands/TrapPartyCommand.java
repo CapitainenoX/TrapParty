@@ -50,6 +50,10 @@ public class TrapPartyCommand implements CommandExecutor, TabCompleter {
                 p.sendMessage(plugin.messages().get("stats.games-played", Map.of("games", String.valueOf(st.getGamesPlayed()))));
                 p.sendMessage(plugin.messages().get("stats.mmr", Map.of("mmr", String.valueOf(st.getMmr()))));
                 p.sendMessage(plugin.messages().get("stats.kd", Map.of("kd", String.valueOf(st.getKd()))));
+                // Affichage du solde (Vault ou coins de partie)
+                var g = plugin.games().forPlayer(p);
+                var gp = g != null ? g.getPlayer(p.getUniqueId()) : null;
+                p.sendMessage("§7Solde : §e" + plugin.economy().format(plugin.economy().balance(p, gp)));
             }
             case "list" -> {
                 sender.sendMessage("§6Parties en cours : §f" + plugin.games().all().size());

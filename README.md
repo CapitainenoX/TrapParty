@@ -195,19 +195,23 @@ connexion.
 
 ### Personnaliser
 
-- Modifier les textures : éditer les PNG dans
-  `src/main/resources/resourcepack/assets/trapparty/textures/item/` ou
-  régénérer via `python3 scripts/gen_textures.py`.
-- Ajouter un nouveau special item :
+- **Textures** : les PNG dans
+  `src/main/resources/resourcepack/assets/trapparty/textures/item/` sont
+  fournis vides (16×16 transparent) et étiquetés. Tu peux les remplacer
+  par tes propres designs en gardant le même nom de fichier.
+  La doc complète des textures (à quoi correspond chaque PNG, base item,
+  custom_model_data) est dans
+  [`resourcepack/TEXTURES.md`](src/main/resources/resourcepack/TEXTURES.md).
+- **Ajouter un nouveau special item** :
   1. Créer une classe dans `fr.trapparty.items.impl` qui implémente `SpecialItem`.
   2. L'enregistrer dans `SpecialItemManager#registerDefaults()`.
   3. Créer le modèle JSON dans `resourcepack/assets/trapparty/models/item/<id>.json`
-     et la texture PNG.
+     et la texture PNG (16×16).
   4. Ajouter un override dans `assets/minecraft/items/<base_item>.json` avec
      un `custom_model_data` unique.
-- Distribuer via commande admin : `/tpa give <player> <item_id>` ou par le
-  shop en jeu (catégorie "Items Spéciaux" via le NETHER_STAR).
-- Donner directement aux kits via `kits.yml` :
+- **Distribuer** via commande admin : `/tpa give <player> <item_id>` ou par
+  le shop en jeu (catégorie "Items Spéciaux").
+- **Donner directement aux kits** via `kits.yml` :
 
   ```yaml
   engineer:
@@ -215,6 +219,29 @@ connexion.
       - super_drill
       - remote_activator
   ```
+
+## Économie (Vault)
+
+Le plugin utilise [Vault](https://www.spigotmc.org/resources/vault.34315/)
+en soft-depend. Tant que Vault et un provider Economy (EssentialsX, CMI,
+TNE…) sont présents, le shop et les récompenses sont **persistants entre
+les parties**.
+
+Bascule entre Vault et les pièces de partie via `config.yml` :
+
+```yaml
+economy:
+  mode: vault   # ou "coins" pour ne PAS utiliser Vault
+  kill-reward: 25
+  trap-kill-bonus: 15
+  win-reward: 150
+  participation: 25
+```
+
+Si `mode: vault` est défini mais que Vault est absent ou qu'aucun provider
+n'est enregistré, le plugin retombe automatiquement sur les pièces de
+partie. La devise affichée dans le shop suit le formatage Vault
+(`econ.format(amount)`).
 
 ## Roadmap (idées)
 

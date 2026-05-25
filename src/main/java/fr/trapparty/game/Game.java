@@ -277,7 +277,9 @@ public class Game {
             GamePlayer gk = players.get(killer.getUniqueId());
             if (gk != null) {
                 gk.addKill();
-                gk.addCoins(plugin.configs().killReward() + (trapKill ? plugin.configs().trapKillBonus() : 0));
+                int reward = plugin.configs().killReward() + (trapKill ? plugin.configs().trapKillBonus() : 0);
+                // Route via EconomyService : Vault si actif, sinon pièces de partie.
+                plugin.economy().deposit(killer, gk, reward);
                 if (trapKill) gk.addTrapKill();
                 broadcastPrefixed(trapKill ? "game.player-trap-killed" : "game.player-killed",
                         Map.of("player", victim.getName(), "killer", killer.getName()));

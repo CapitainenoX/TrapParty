@@ -1,0 +1,8 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "entries": [{"threshold":2001,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_blocks"}},{"threshold":2002,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_traps"}},{"threshold":2003,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_utility"}},{"threshold":2004,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_consumables"}},{"threshold":2005,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_redstone"}},{"threshold":2006,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_mobility"}},{"threshold":2007,"model":{"type":"minecraft:model","model":"trapparty:item/shop_button_special"}}],
+    "fallback": { "type": "minecraft:model", "model": "minecraft:item/paper" }
+  }
+}

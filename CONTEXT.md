@@ -71,12 +71,34 @@ aléatoire), wind_stomper (push), decoy_block (fausse pierre piégée),
 grappling_hook (25m), spy_lens (glowing 10s), magnet_bomb (aspire+TNT).
 
 Resource pack dans `src/main/resources/resourcepack/` (pack_format 84, MC 26.1) :
-- 8 PNG 16x16 générées par `scripts/gen_textures.py`
-- Overrides vanilla via `assets/minecraft/items/*.json` (range_dispatch sur custom_model_data 1001-1008)
+- 22 PNG 16x16 **vides** (transparent) étiquetés, à designer manuellement
+- Doc complète des textures dans `resourcepack/TEXTURES.md` (mapping
+  fichier → base material → custom_model_data → rôle)
+- Overrides vanilla via `assets/minecraft/items/*.json` (range_dispatch)
+  - 8 items spéciaux (CMD 1001-1008)
+  - 14 éléments d'UI shop (CMD 2001-2031)
 - Modèles custom dans `assets/trapparty/models/item/*.json`
 - Langs FR/EN
-- Build via `scripts/build_pack.sh` → trapparty-pack.zip + SHA-1
+- Build via `scripts/build_pack.sh` → `trapparty-pack.zip` + SHA-1
 - Envoi automatique aux joueurs via `config.yml > resource-pack`
 
+## Économie Vault
+- `fr.trapparty.economy.VaultHook` (reflection pure, pas d'import direct
+  Vault → compile/charge même sans Vault).
+- `fr.trapparty.economy.EconomyService` façade : route vers Vault si actif,
+  sinon vers les pièces de partie (compat).
+- Mode dans `config.yml > economy.mode` (`vault` ou `coins`).
+- Tous les achats du shop + récompenses (kill, win, participation) passent
+  par EconomyService.
+
+## Shop custom
+- GUI custom 6 lignes : bordure décorée (white_stained_glass_pane CMD 2030),
+  logo central (nether_star CMD 2031), bouton close (barrier CMD 2023),
+  bouton retour (arrow CMD 2022), affichage solde (gold_nugget CMD 2010).
+- 7 boutons de catégorie sur PAPER (CMD 2001-2007) : blocs / pièges /
+  utility / consumables / redstone / mobility / items spéciaux.
+- Affichage par item : indicateur "✓ Clique pour acheter" vs
+  "✗ Fonds insuffisants" calculé en live d'après EconomyService.
+
 ## Statut
-✅ Initial + upgrade 26.1.2 + items spéciaux + resource pack
+✅ Initial + upgrade 26.1.2 + items spéciaux + resource pack + Vault economy + shop custom

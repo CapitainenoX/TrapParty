@@ -43,7 +43,12 @@ arena:
     delay-after-end: 10
 
 economy:
-  starting-coins: 50
+  # Mode de paiement du shop et des récompenses :
+  #   vault  : utilise Vault (persistent across games, recommandé si Vault installé)
+  #   coins  : utilise des pièces par partie (RAZ à chaque partie)
+  # Si Vault est introuvable mais mode=vault, fallback automatique sur "coins".
+  mode: vault
+  starting-coins: 50          # pièces de partie au join (ignoré en mode vault)
   kill-reward: 25
   trap-kill-bonus: 15
   win-reward: 150

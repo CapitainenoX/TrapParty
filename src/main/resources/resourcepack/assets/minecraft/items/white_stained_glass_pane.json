@@ -1,0 +1,8 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "entries": [{"threshold":2030,"model":{"type":"minecraft:model","model":"trapparty:item/shop_border"}}],
+    "fallback": { "type": "minecraft:model", "model": "minecraft:item/white_stained_glass_pane" }
+  }
+}

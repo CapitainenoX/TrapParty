@@ -76,6 +76,9 @@ public class StatsManager {
         st.addCoins(gp.getCoins() + plugin.configs().winReward());
         // MMR Elo simplifié : +25 sur win
         st.setMmr(st.getMmr() + 25);
+        // Crédit Vault si dispo
+        Player p = Bukkit.getPlayer(uuid);
+        if (p != null) plugin.economy().deposit(p, gp, plugin.configs().winReward());
         markDirty();
     }
 
@@ -88,6 +91,9 @@ public class StatsManager {
         st.addCoins(gp.getCoins());
         // léger -5 mmr si non-vainqueur
         st.setMmr(Math.max(0, st.getMmr() - 5));
+        // Crédit Vault de la prime de participation
+        Player p = Bukkit.getPlayer(uuid);
+        if (p != null) plugin.economy().deposit(p, gp, plugin.configs().participation());
         markDirty();
     }
 
