@@ -83,6 +83,7 @@ public class TrapPartyCommand implements CommandExecutor, TabCompleter {
         s.sendMessage(" §e/tparty arenas §7- liste des arènes");
         s.sendMessage(" §e/kit §7- choisir un kit");
         s.sendMessage(" §e/shop §7- ouvrir la boutique");
+        s.sendMessage(" §e/crafts §7- voir les items spéciaux");
         s.sendMessage(" §e/spectate <arène> §7- spectate");
     }
 

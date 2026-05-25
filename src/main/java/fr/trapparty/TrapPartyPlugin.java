@@ -2,6 +2,7 @@ package fr.trapparty;
 
 import fr.trapparty.arena.ArenaManager;
 import fr.trapparty.commands.AdminCommand;
+import fr.trapparty.commands.CraftsCommand;
 import fr.trapparty.commands.KitCommand;
 import fr.trapparty.commands.ShopCommand;
 import fr.trapparty.commands.SpectateCommand;
@@ -22,6 +23,7 @@ import fr.trapparty.shop.ShopManager;
 import fr.trapparty.stats.StatsManager;
 import fr.trapparty.trap.TrapManager;
 import fr.trapparty.ui.BossBarManager;
+import fr.trapparty.ui.CraftsGui;
 import fr.trapparty.ui.HologramManager;
 import fr.trapparty.ui.ScoreboardManager;
 import fr.trapparty.world.WorldManager;
@@ -49,6 +51,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private BossBarManager bossBarManager;
     private HologramManager hologramManager;
+    private CraftsGui craftsGui;
 
     @Override
     public void onEnable() {
@@ -74,6 +77,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
         this.scoreboardManager = new ScoreboardManager(this);
         this.bossBarManager = new BossBarManager(this);
         this.hologramManager = new HologramManager(this);
+        this.craftsGui = new CraftsGui(this);
 
         this.gameManager = new GameManager(this);
 
@@ -109,6 +113,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
         register("kit", new KitCommand(this));
         register("shop", new ShopCommand(this));
         register("spectate", new SpectateCommand(this));
+        register("crafts", new CraftsCommand(this));
     }
 
     private void register(String name, Object executor) {
@@ -154,4 +159,5 @@ public final class TrapPartyPlugin extends JavaPlugin {
     public ScoreboardManager scoreboards() { return scoreboardManager; }
     public BossBarManager bossbars() { return bossBarManager; }
     public HologramManager holograms() { return hologramManager; }
+    public CraftsGui crafts() { return craftsGui; }
 }

@@ -12,32 +12,47 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * GUI de sélection des kits. Fond dessiné via custom font (resource pack),
+ * char . Les kits sont placés à des slots fixes, alignés sur la
+ * texture pour que les "boutons" dessinés dans l'image correspondent.
+ */
 public class KitSelectionGui {
+
+    public static final String GUI_TITLE_CHAR = "";
+
+    /** Slots fixes pour 8 kits (2 rangées x 4) dans une inv 54 slots. */
+    private static final int[] KIT_SLOTS = {
+            19, 21, 23, 25,    // row 2
+            37, 39, 41, 43     // row 4
+    };
 
     private final TrapPartyPlugin plugin;
     private final Set<UUID> openInventories = ConcurrentHashMap.newKeySet();
-    private final Map<UUID, List<Kit>> slotIndex = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<Integer, Kit>> slotIndex = new ConcurrentHashMap<>();
 
     public KitSelectionGui(TrapPartyPlugin plugin) { this.plugin = plugin; }
 
     public void open(Player p) {
         List<Kit> kits = new ArrayList<>(plugin.kits().all());
-        int rows = Math.max(1, (kits.size() + 8) / 9);
-        Inventory inv = Bukkit.createInventory(null, rows * 9, "§eChoisis ton kit");
-        for (int i = 0; i < kits.size(); i++) {
+        Inventory inv = Bukkit.createInventory(null, 54, GUI_TITLE_CHAR);
+        Map<Integer, Kit> mapping = new HashMap<>();
+        for (int i = 0; i < kits.size() && i < KIT_SLOTS.length; i++) {
             Kit k = kits.get(i);
+            int slot = KIT_SLOTS[i];
             List<String> lore = new ArrayList<>();
             lore.add(" ");
             lore.addAll(k.getDescription());
             lore.add(" ");
-            lore.add(k.canUse(p) ? "§aClique pour sélectionner" : "§cKit verrouillé");
-            inv.setItem(i, new ItemBuilder(k.getIcon())
+            lore.add(k.canUse(p) ? "§a✓ Clique pour sélectionner" : "§c✗ Kit verrouillé");
+            inv.setItem(slot, new ItemBuilder(k.getIcon())
                     .name(k.getDisplayName())
                     .lore(lore)
                     .build());
+            mapping.put(slot, k);
         }
         openInventories.add(p.getUniqueId());
-        slotIndex.put(p.getUniqueId(), kits);
+        slotIndex.put(p.getUniqueId(), mapping);
         p.openInventory(inv);
     }
 
@@ -48,9 +63,10 @@ public class KitSelectionGui {
         ItemStack it = e.getCurrentItem();
         if (it == null) return;
         int slot = e.getRawSlot();
-        List<Kit> list = slotIndex.get(p.getUniqueId());
-        if (list == null || slot < 0 || slot >= list.size()) return;
-        Kit k = list.get(slot);
+        Map<Integer, Kit> mapping = slotIndex.get(p.getUniqueId());
+        if (mapping == null) return;
+        Kit k = mapping.get(slot);
+        if (k == null) return;
         if (!k.canUse(p)) {
             plugin.messages().send(p, "kit.locked");
             return;

@@ -117,11 +117,13 @@ public class GameListener implements Listener {
     public void onClick(InventoryClickEvent e) {
         plugin.shop().handleClick(e);
         if (plugin.kits().gui() != null) plugin.kits().gui().handleClick(e);
+        if (plugin.crafts() != null) plugin.crafts().handleClick(e);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         plugin.shop().handleClose(e.getPlayer().getUniqueId());
         if (plugin.kits().gui() != null) plugin.kits().gui().handleClose(e.getPlayer().getUniqueId());
+        if (plugin.crafts() != null) plugin.crafts().handleClose(e.getPlayer().getUniqueId());
     }
 }

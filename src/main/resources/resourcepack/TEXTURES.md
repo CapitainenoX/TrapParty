@@ -1,182 +1,163 @@
-# TrapParty Resource Pack — textures du menu
+# TrapParty Resource Pack — 3 GUIs custom
 
-Le resource pack ne contient **que les éléments d'interface** du shop. Les
-items spéciaux (Super Foreuse, Activateur à distance, Trap Caller,
-Grappling Hook) ne sont **pas** des textures custom : ce sont des items
-vanilla (`NETHERITE_PICKAXE`, `COMPASS`, `BLAZE_ROD`, `FISHING_ROD`)
-auxquels on ajoute un *glow* d'enchantement, un nom personnalisé et de la
-lore.
+Le resource pack ne contient **que 3 PNG** : une image par interface
+du plugin. Les boutons (acheter / sélectionner / fermer / etc.) sont
+**dessinés directement dans l'image** ; le plugin place les items
+Bukkit *par-dessus* aux positions correspondantes.
 
-Les 14 PNG du dossier `assets/trapparty/textures/item/` sont fournis
-**vides** (16×16 transparent). Remplace-les par tes propres designs en
-gardant exactement les mêmes noms de fichier.
+| GUI | Fichier PNG | Commande in-game | Inventaire |
+|---|---|---|---|
+| Shop pièges | `assets/trapparty/textures/gui/shop_traps.png` | `/shop` | 54 slots (9×6) |
+| Sélection de kit | `assets/trapparty/textures/gui/kits.png` | `/kit` | 54 slots (9×6) |
+| Items spéciaux | `assets/trapparty/textures/gui/crafts.png` | `/crafts` | 27 slots (9×3) |
 
-## Comment utiliser les prompts nano-banana
+## Comment ça marche techniquement
 
-[Nano Banana](https://gemini.google/overview/image-generation/) (Gemini
-2.5 Flash Image) génère des images à partir d'instructions textuelles.
-Pour chaque texture ci-dessous, copie le prompt dans Nano Banana, génère,
-puis enregistre en **PNG 16×16 RGBA** dans le chemin indiqué.
+Le resource pack définit une font custom
+(`assets/minecraft/font/default.json`) qui associe un caractère unicode
+de la PUA (`` / `` / ``) à chaque image. Quand le
+plugin ouvre l'inventaire, il met ce caractère unicode comme titre :
 
-> **Recettes générales à ajouter à tout prompt** si tu veux un rendu
-> cohérent avec Minecraft :
-> *"16x16 pixel art icon, Minecraft texture style, transparent
-> background, clean palette, no anti-aliasing, sharp pixel edges,
-> vanilla-friendly art direction."*
+```java
+inv = Bukkit.createInventory(null, 54, ""); // shop
+```
 
-> Si Nano Banana sort en plus haute résolution, downscale à 16×16 avec un
-> nearest-neighbor (GIMP, Pixilart, ImageMagick `-filter point -resize 16x16`).
+Côté client, le renderer Minecraft remplace ce char par l'image avec
+l'ascent défini dans `default.json` → l'image apparaît comme arrière-plan
+de la GUI.
+
+## Positions des slots à respecter dans tes designs
+
+Les boutons cliquables sont des **slots Bukkit standards** (case
+18×18 px dans la GUI). Conçois ton image en sachant où ils vont
+apparaître.
+
+### `shop_traps.png` — 21 emplacements item piège
+
+3 lignes de 7 items. Slots Bukkit utilisés :
+
+```
+. . . . . . . . .     0  1  2  3  4  5  6  7  8
+. ▦ ▦ ▦ ▦ ▦ ▦ ▦ .     9  10 11 12 13 14 15 16 17    ← items
+. ▦ ▦ ▦ ▦ ▦ ▦ ▦ .     18 19 20 21 22 23 24 25 26    ← items
+. ▦ ▦ ▦ ▦ ▦ ▦ ▦ .     27 28 29 30 31 32 33 34 35    ← items
+. . . . . . . . .     36 37 38 39 40 41 42 43 44
+. . . . X . . . .     45 46 47 48 49 50 51 52 53    ← X = close (slot 49)
+```
+
+Dessine donc 3 rangées d'emplacements pour items piège dans la zone
+correspondante, et un bouton "Fermer" sous le slot 49.
+
+### `kits.png` — 8 emplacements kit (2×4)
+
+```
+. . . . . . . . .     0  1  2  3  4  5  6  7  8
+. . . . . . . . .     9  10 11 12 13 14 15 16 17
+. ▦ . ▦ . ▦ . ▦ .     18 19 20 21 22 23 24 25 26    ← kits row 1 (19,21,23,25)
+. . . . . . . . .     27 28 29 30 31 32 33 34 35
+. ▦ . ▦ . ▦ . ▦ .     36 37 38 39 40 41 42 43 44    ← kits row 2 (37,39,41,43)
+. . . . . . . . .     45 46 47 48 49 50 51 52 53
+```
+
+Dessine 8 cadres "kit" à ces 8 positions.
+
+### `crafts.png` — 4 items spéciaux
+
+```
+. . . . . . . . .     0  1  2  3  4  5  6  7  8
+. ▦ . ▦ . ▦ . ▦ .     9  10 11 12 13 14 15 16 17    ← 4 items (10,12,14,16)
+. . . . . . . . .     18 19 20 21 22 23 24 25 26
+```
+
+Dessine 4 cadres avec sous chacun un panneau "info" indiquant
+*Shop / Kit / Admin*.
+
+## Prompts Nano Banana
+
+> **Recette à ajouter à tous les prompts** : *"PNG with transparent
+> background, 256x256, designed as a Minecraft inventory GUI
+> overlay/background, vanilla Minecraft pixel art style, no
+> anti-aliasing, sharp pixel edges, the design must keep slot
+> positions clear and uncluttered."*
+
+> Les textures sont **256×256 PNG transparent**. Tu peux dessiner à
+> plus haute résolution puis downscale (nearest-neighbor) si Nano
+> Banana ne sort pas en pixel art natif.
 
 ---
 
-## Boutons de catégorie (PAPER, custom_model_data 2001-2007)
-
-### `shop_button_blocks.png` — CMD 2001 — Catégorie "Blocs"
+### 1. `shop_traps.png` — Shop pièges (``)
 
 > **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a stack of three cobblestone
-> blocks with a small green plus sign in the top-right corner, gray
-> rocky texture with darker outlines, vanilla Minecraft palette,
-> transparent background, no anti-aliasing, sharp pixel edges."
-
-### `shop_button_traps.png` — CMD 2002 — Catégorie "Pièges"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a primed red TNT block with a
-> burning fuse, sparkles around it, classic red and white TNT texture,
-> orange glowing fuse on top, transparent background, no anti-aliasing,
-> sharp pixel edges."
-
-### `shop_button_utility.png` — CMD 2003 — Catégorie "Utilitaires"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a wooden shield with metal
-> rim and crossed iron sword behind it, blue and silver tones, hero
-> emblem in the shield center, transparent background, no anti-aliasing,
-> sharp pixel edges."
-
-### `shop_button_consumables.png` — CMD 2004 — Catégorie "Consommables"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon showing a golden apple with a
-> small red health heart floating above it, warm yellow and red palette,
-> transparent background, no anti-aliasing, sharp pixel edges."
-
-### `shop_button_redstone.png` — CMD 2005 — Catégorie "Redstone"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a redstone dust pile with
-> bright red glow and a tiny electric spark, dark red and crimson palette,
-> faint red outline glow, transparent background, no anti-aliasing,
-> sharp pixel edges."
-
-### `shop_button_mobility.png` — CMD 2006 — Catégorie "Mobilité"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a white feather with light
-> blue motion lines behind it suggesting fast movement, soft cyan glow,
-> simple and stylized, transparent background, no anti-aliasing, sharp
-> pixel edges."
-
-### `shop_button_special.png` — CMD 2007 — Catégorie "Items Spéciaux"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a glowing magenta four-pointed
-> star with golden sparkles around it, mystical and rare feeling, pink
-> and gold palette, slight purple aura, transparent background, no
+> "Minecraft custom GUI overlay 256x256 pixel art, titled 'TRAP SHOP'
+> at the top in bold red and white pixel font with a flame motif,
+> dark stone-brick background with a worn red banner header,
+> three horizontal rows of seven empty item frame slots (each frame
+> a 18x18 dark beveled square with a faint red glow), under each
+> frame a small 'BUY' button drawn in gold pixel font, at the bottom
+> center a red close button labeled 'X' with rounded edges, decorative
+> chains and TNT motifs in the corners, transparent background outside
+> the GUI area, Minecraft vanilla art direction, 256x256, no
 > anti-aliasing, sharp pixel edges."
 
----
-
-## Solde et boutons d'action
-
-### `shop_currency.png` — `gold_nugget` CMD 2010 — Affichage du solde
+### 2. `kits.png` — Sélection de kit (``)
 
 > **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a single gold coin with a
-> dollar-like '$' symbol engraved in the center, shiny yellow and
-> orange shading, slight metallic gleam in the top-left, transparent
-> background, no anti-aliasing, sharp pixel edges."
-
-### `shop_buy_button.png` — `lime_dye` CMD 2020 — Bouton "Acheter"
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a bold green checkmark in a
-> rounded green button, light green highlight on top, dark green
-> outline, success/confirmation feel, transparent background, no
+> "Minecraft custom GUI overlay 256x256 pixel art, titled 'CHOOSE
+> YOUR KIT' at the top in bold blue and white pixel font with a
+> sword motif, dark obsidian stone background with a worn blue banner
+> header, two horizontal rows of four kit slots (each kit slot is a
+> 18x18 framed square with a parchment scroll underneath showing
+> 'SELECT'), the slots arranged in two evenly spaced rows separated
+> by a thin gold divider, decorative armor pieces in the corners
+> (helmet, chestplate, sword, bow), transparent background outside
+> the GUI area, Minecraft vanilla art direction, 256x256, no
 > anti-aliasing, sharp pixel edges."
 
-### `shop_locked_button.png` — `red_dye` CMD 2021 — "Fonds insuffisants"
+### 3. `crafts.png` — Items spéciaux (``)
 
 > **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a closed dark padlock with a
-> small red X overlay in the bottom-right corner, gray metallic body,
-> red warning accent, transparent background, no anti-aliasing, sharp
-> pixel edges."
-
-### `shop_back_button.png` — `arrow` CMD 2022 — Retour menu
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a thick left-pointing arrow
-> with a clean triangular head, bright yellow color with a darker yellow
-> outline, simple and readable, transparent background, no anti-aliasing,
-> sharp pixel edges."
-
-### `shop_close_button.png` — `barrier` CMD 2023 — Fermer le shop
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art icon of a bold red X cross on a
-> circular dark red background, slightly thicker strokes, danger/close
-> feel, transparent background, no anti-aliasing, sharp pixel edges."
+> "Minecraft custom GUI overlay 256x256 pixel art, titled 'SPECIAL
+> ITEMS' at the top in bold purple and white pixel font with a
+> sparkle motif, dark enchanted background with a worn purple banner
+> header, a single horizontal row of four item frames (each frame
+> 18x18 dark beveled square with a magenta glow), under each frame a
+> small info plate showing icons for SHOP / KIT / ADMIN sources,
+> decorative magical runes around the borders, transparent
+> background outside the GUI area, Minecraft vanilla art direction,
+> 256x256, no anti-aliasing, sharp pixel edges."
 
 ---
 
-## Décoration
+## Tuning de la position de l'image
 
-### `shop_border.png` — `white_stained_glass_pane` CMD 2030 — Bordure GUI
+Si après installation l'image apparaît trop haute / trop basse,
+édite la valeur `ascent` correspondante dans
+`assets/minecraft/font/default.json` :
 
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art tileable decorative border panel,
-> ornate golden filigree on a dark blue background, intricate corner
-> details, fantasy castle vibe, the edges must connect when tiled side
-> by side, transparent background outside the ornament, no anti-aliasing,
-> sharp pixel edges."
+```json
+{
+  "type": "bitmap",
+  "file": "trapparty:gui/shop_traps.png",
+  "ascent": -8,    // augmente pour descendre, diminue pour remonter
+  "height": 256,
+  "chars": [""]
+}
+```
 
-### `shop_logo.png` — `nether_star` CMD 2031 — Logo central
-
-> **Prompt nano-banana :**
-> "Minecraft-style 16x16 pixel art emblem showing a stylized red letter
-> 'T' on a dark gradient circular badge with golden ornament around it,
-> the T has a small white skull or trap motif underneath, premium
-> minigame logo feel, red gold and black palette, transparent
-> background, no anti-aliasing, sharp pixel edges."
-
----
-
-## Pack icon
-
-`pack.png` à la racine du resource pack — affiché dans le sélecteur de
-resource pack du client. **Format : 64×64 ou 128×128 PNG**.
-
-> **Prompt nano-banana :**
-> "Square game logo, 128x128 pixels, the words 'TRAP PARTY' on two lines,
-> red and white blocky pixel font with golden outline, sharp Minecraft
-> pixel art aesthetic, dynamic explosive trap motif in the background
-> (TNT sparks, tripwires), dark blue gradient backdrop, vibrant
-> high-contrast palette, premium minigame branding."
-
----
+Des caractères de décalage horizontal (`` à ``) sont
+également fournis dans la font pour micro-ajuster, mais en pratique
+l'image se centre automatiquement.
 
 ## Workflow
 
-1. Génère les 14 PNG via Nano Banana avec les prompts ci-dessus.
-2. Si nécessaire, downscale à 16×16 en nearest-neighbor.
-3. Sauvegarde-les dans `src/main/resources/resourcepack/assets/trapparty/textures/item/`
-   en gardant les noms exacts ci-dessus.
-4. Génère le `pack.png` (64×64 ou 128×128) à la racine du resource pack.
-5. Rebuild : `bash scripts/build_pack.sh` → produit `trapparty-pack.zip`
-   et affiche le SHA-1.
-6. Upload le zip sur ton CDN, mets l'URL + SHA-1 dans
+1. Pour chacun des 3 PNG, copie le prompt nano-banana dans Gemini /
+   nano-banana et génère.
+2. Si l'image n'est pas en 256×256, downscale nearest-neighbor.
+3. Sauvegarde dans `assets/trapparty/textures/gui/` avec le nom exact.
+4. Rebuild : `bash scripts/build_pack.sh` → produit `trapparty-pack.zip`.
+5. Upload sur ton CDN, mets URL + SHA-1 dans
    `plugins/TrapParty/config.yml > resource-pack`.
 
-Les joueurs reçoivent le pack automatiquement à la connexion.
+Les joueurs reçoivent le pack à la connexion ; toutes les GUI du
+plugin afficheront le fond custom.

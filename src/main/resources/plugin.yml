@@ -27,6 +27,10 @@ commands:
     description: Spectate a running game.
     aliases: [spec]
     usage: /<command> [arena]
+  crafts:
+    description: Affiche les infos sur les items spéciaux (comment les obtenir).
+    aliases: [special, items]
+    usage: /<command>
 
 permissions:
   trapparty.*:
