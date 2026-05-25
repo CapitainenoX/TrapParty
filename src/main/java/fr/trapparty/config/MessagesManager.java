@@ -41,10 +41,19 @@ public class MessagesManager {
         String s = raw(path);
         if (placeholders != null) {
             for (Map.Entry<String, String> e : placeholders.entrySet()) {
-                s = s.replace("{" + e.getKey() + "}", e.getValue());
+                // Sanitize les valeurs externes (noms joueurs, etc) pour éviter
+                // l'injection de codes couleur via display name custom.
+                String safe = sanitize(e.getValue());
+                s = s.replace("{" + e.getKey() + "}", safe);
             }
         }
         return color(s);
+    }
+
+    private static String sanitize(String value) {
+        if (value == null) return "";
+        // Retire les marqueurs de couleur que l'utilisateur ne contrôle pas
+        return value.replace("§", "").replace("&", "");
     }
 
     public String prefix() { return color(messages.getString("prefix", "")); }
@@ -68,20 +77,27 @@ public class MessagesManager {
         for (Player p : players) p.sendMessage(msg);
     }
 
+    /**
+     * Convertit les codes couleur :
+     *  - `&a`, `&l`... vers `§a`, `§l`... (ChatColor.translateAlternateColorCodes)
+     *  - `&#RRGGBB` vers la séquence §x§R§R§G§G§B§B (hex 1.16+) sans
+     *    dépendre de net.md_5.bungee.api.ChatColor (deprecated / removable).
+     */
     public static String color(String input) {
         if (input == null) return "";
         Matcher m = HEX.matcher(input);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(input.length());
+        int last = 0;
         while (m.find()) {
+            sb.append(input, last, m.start());
             String hex = m.group(1);
-            // ne tente pas Adventure ici : on convertit en code legacy si dispo (1.16+)
-            try {
-                m.appendReplacement(sb, Matcher.quoteReplacement(net.md_5.bungee.api.ChatColor.of("#" + hex).toString()));
-            } catch (Throwable t) {
-                m.appendReplacement(sb, "");
+            sb.append(ChatColor.COLOR_CHAR).append('x');
+            for (char c : hex.toCharArray()) {
+                sb.append(ChatColor.COLOR_CHAR).append(c);
             }
+            last = m.end();
         }
-        m.appendTail(sb);
+        sb.append(input, last, input.length());
         return ChatColor.translateAlternateColorCodes('&', sb.toString());
     }
 }

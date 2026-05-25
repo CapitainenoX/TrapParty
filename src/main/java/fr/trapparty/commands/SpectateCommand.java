@@ -22,13 +22,20 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player p)) { plugin.messages().send(sender, "generic.player-only"); return true; }
+        if (!p.hasPermission("trapparty.spectate")) {
+            plugin.messages().send(p, "generic.no-permission");
+            return true;
+        }
+        if (plugin.games().forPlayer(p) != null) {
+            plugin.messages().send(p, "generic.in-game");
+            return true;
+        }
         if (args.length == 0) {
             sender.sendMessage("§e/spectate <gameId|arena>");
             return true;
         }
         Game game = plugin.games().get(args[0]);
         if (game == null) {
-            // chercher première game de l'arène
             for (Game g : plugin.games().all()) {
                 if (g.getArena().getId().equalsIgnoreCase(args[0])) { game = g; break; }
             }

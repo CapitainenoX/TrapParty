@@ -32,9 +32,17 @@ public class SuperDrill implements SpecialItem {
     @Override
     public boolean onUse(Player p, PlayerInteractEvent e) {
         TrapPartyPlugin plugin = TrapPartyPlugin.get();
+        // Respect des règles de l'arène : pas de break en prep si interdit
+        var game = plugin.games().forPlayer(p);
+        if (game == null) return false;
+        if (game.getState() == fr.trapparty.game.GameState.PREPARATION
+                && !game.getArena().isBlockBreakAllowedInPrep()) {
+            plugin.messages().send(p, "trap.placed",
+                    java.util.Map.of("trap", "drill bloqué pendant la prep"));
+            return false;
+        }
         Block target = e.getClickedBlock();
         if (target == null) {
-            // air → utilise le bloc visé à courte distance
             target = p.getTargetBlockExact(6);
             if (target == null) return false;
         }
@@ -45,7 +53,6 @@ public class SuperDrill implements SpecialItem {
                     Block b = target.getRelative(dx, dy, dz);
                     if (b.getType() == Material.AIR || b.getType().isAir()) continue;
                     if (b.getType() == Material.BEDROCK) continue;
-                    // ne casse pas les pièges placés par d'autres joueurs
                     if (plugin.traps().atBlock(b.getLocation()) != null) continue;
                     if (!b.getType().isSolid() && b.getType() != Material.WATER && b.getType() != Material.LAVA) continue;
                     if (b.breakNaturally(p.getInventory().getItemInMainHand())) broken++;
@@ -54,7 +61,7 @@ public class SuperDrill implements SpecialItem {
         }
         plugin.version().sound(p, "BLOCK_STONE_BREAK", 1f, 0.6f);
         plugin.version().particle(target.getLocation().add(0.5, 0.5, 0.5),
-                "EXPLOSION_NORMAL", 12, 0.4, 0.4, 0.4, 0.1);
+                "EXPLOSION", 12, 0.4, 0.4, 0.4, 0.1);
         return broken > 0;
     }
 }

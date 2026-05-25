@@ -215,16 +215,28 @@ public class Game {
             GamePlayer gp = players.get(winnerUuid);
             String name = gp != null ? gp.getName() : "?";
             broadcastPrefixed("game.win", Map.of("player", name));
-            forEach(p -> plugin.version().sendTitle(p, "&6&l✦ VICTOIRE", "&e" + name, 10, 70, 10));
-            // récompenses
-            if (gp != null) {
-                plugin.stats().recordWin(winnerUuid, gp);
-            }
+            forEach(p -> {
+                plugin.version().sendTitle(p, "&6&l✦ VICTOIRE", "&e" + name, 10, 70, 10);
+                plugin.version().sound(p, p.getUniqueId().equals(winnerUuid)
+                        ? "UI_TOAST_CHALLENGE_COMPLETE" : "ENTITY_PLAYER_LEVELUP", 1f, 1f);
+            });
+            if (gp != null) plugin.stats().recordWin(winnerUuid, gp);
         } else {
             broadcastPrefixed("game.no-winner", null);
+            forEach(p -> plugin.version().sound(p, "ENTITY_VILLAGER_DEATH", 1f, 1f));
         }
+        // Récap individuel pour chaque participant
         for (GamePlayer gp : players.values()) {
             plugin.stats().recordParticipation(gp.getUuid(), gp);
+            Player online = Bukkit.getPlayer(gp.getUuid());
+            if (online == null) continue;
+            online.sendMessage("§8§m                                        ");
+            online.sendMessage("§6§l✦ Fin de partie §7- §e" + arena.getDisplayName());
+            online.sendMessage("§7• Kills        : §c" + gp.getKills());
+            online.sendMessage("§7• Trap kills   : §6" + gp.getTrapKills());
+            online.sendMessage("§7• Survécu      : §" + (gp.isAlive() ? "aoui" : "cnon"));
+            online.sendMessage("§7• Gains        : §6" + plugin.economy().format(gp.getCoins()));
+            online.sendMessage("§8§m                                        ");
         }
     }
 
@@ -249,11 +261,13 @@ public class Game {
         joinedOrder.clear();
         plugin.holograms().removeForGame(id);
         plugin.traps().clearGame(id);
+        // Détache immédiatement les mappings côté GameManager pour éviter
+        // toute fuite si un joueur quitte pendant le délai de cleanup.
+        plugin.games().destroy(this);
 
         int delay = plugin.configs().root().getInt("arena.cleanup.delay-after-end", 10);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             plugin.worlds().unloadAndDelete(worldName);
-            plugin.games().destroy(this);
         }, delay * 20L);
     }
 
@@ -418,19 +432,35 @@ public class Game {
 
     public long uptimeMillis() { return System.currentTimeMillis() - createdAt; }
 
-    /** Max-health cross-version : Attribute moderne, fallback Damageable#getMaxHealth (déprécié). */
+    /**
+     * Max-health cross-version :
+     *  - 1.21.3+ : Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max_health"))
+     *  - 1.20.5+ : Attribute.GENERIC_MAX_HEALTH (legacy enum)
+     *  - fallback : Damageable#getMaxHealth() (deprecated, removable)
+     */
     @SuppressWarnings("deprecation")
     private static double maxHealthOf(Player p) {
+        // Registry lookup (Paper 26.1+)
         try {
-            org.bukkit.attribute.Attribute attr = org.bukkit.attribute.Attribute.valueOf("MAX_HEALTH");
-            var inst = p.getAttribute(attr);
-            if (inst != null) return inst.getValue();
+            org.bukkit.attribute.Attribute attr =
+                    org.bukkit.Registry.ATTRIBUTE.get(org.bukkit.NamespacedKey.minecraft("max_health"));
+            if (attr != null) {
+                var inst = p.getAttribute(attr);
+                if (inst != null && inst.getValue() > 0) return inst.getValue();
+            }
         } catch (Throwable ignored) {}
+        // Legacy enum lookups
+        for (String name : new String[]{"MAX_HEALTH", "GENERIC_MAX_HEALTH"}) {
+            try {
+                org.bukkit.attribute.Attribute attr = org.bukkit.attribute.Attribute.valueOf(name);
+                var inst = p.getAttribute(attr);
+                if (inst != null && inst.getValue() > 0) return inst.getValue();
+            } catch (Throwable ignored) {}
+        }
         try {
-            org.bukkit.attribute.Attribute attr = org.bukkit.attribute.Attribute.valueOf("GENERIC_MAX_HEALTH");
-            var inst = p.getAttribute(attr);
-            if (inst != null) return inst.getValue();
+            double v = p.getMaxHealth();
+            if (v > 0) return v;
         } catch (Throwable ignored) {}
-        try { return p.getMaxHealth(); } catch (Throwable t) { return 20.0; }
+        return 20.0;
     }
 }

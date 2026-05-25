@@ -104,17 +104,17 @@ public class ShopManager {
     public void handleClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player p)) return;
         if (!openShopInventories.contains(p.getUniqueId())) return;
+        // Cancel uniquement les clics sur l'inventaire haut, pas l'inv du joueur
+        int slot = e.getRawSlot();
+        if (slot < 0 || slot >= e.getView().getTopInventory().getSize()) return;
         e.setCancelled(true);
 
-        ItemStack clicked = e.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR) return;
         if (!checkRateLimit(p)) return;
 
-        int slot = e.getRawSlot();
-        // Slot de fermeture
+        // Slot de fermeture (le bouton est dessiné dans la texture, le slot est vide)
         if (slot == CLOSE_SLOT) { p.closeInventory(); return; }
 
-        // Recherche de l'item correspondant au slot
+        // Item piège
         int idx = -1;
         for (int i = 0; i < ITEM_SLOTS.length; i++) {
             if (ITEM_SLOTS[i] == slot) { idx = i; break; }

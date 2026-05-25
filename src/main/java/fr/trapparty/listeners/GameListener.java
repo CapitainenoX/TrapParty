@@ -53,12 +53,16 @@ public class GameListener implements Listener {
         Game g = plugin.games().forPlayer(victim);
         if (g == null) return;
         Player killer = victim.getKiller();
-        boolean trapKill = plugin.traps().recentTriggerFor(victim.getUniqueId()) != null;
+        // Consomme le trigger pour éviter une 2e attribution sur un autre death
+        var trapTrigger = plugin.traps().consumeTrigger(victim.getUniqueId());
+        boolean trapKill = trapTrigger != null;
         if (trapKill && killer == null) {
-            var t = plugin.traps().recentTriggerFor(victim.getUniqueId());
-            if (t != null) {
-                killer = plugin.getServer().getPlayer(t.getOwner());
-            }
+            killer = plugin.getServer().getPlayer(trapTrigger.getOwner());
+        }
+        // Vérifie que le killer est bien dans la même partie (anti-attribution croisée)
+        if (killer != null) {
+            Game killerGame = plugin.games().forPlayer(killer);
+            if (killerGame != g) killer = null;
         }
         e.setKeepInventory(true);
         e.setKeepLevel(true);

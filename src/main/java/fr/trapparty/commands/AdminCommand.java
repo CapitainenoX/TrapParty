@@ -34,6 +34,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case "create" -> {
                 if (args.length < 3) { sender.sendMessage("§c/tpa create <arena> <templateWorld>"); return true; }
+                if (!isSafeId(args[1]) || !isSafeId(args[2])) {
+                    sender.sendMessage("§cNom invalide. Autorisé : §f[a-zA-Z0-9_-] §c(max 32).");
+                    return true;
+                }
                 if (plugin.arenas().createTemplate(args[1], args[2])) {
                     plugin.messages().send(sender, "admin.arena-created", Map.of("arena", args[1]));
                 } else {
@@ -120,6 +124,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private static final java.util.regex.Pattern SAFE_ID =
+            java.util.regex.Pattern.compile("[a-zA-Z0-9_\\-]{1,32}");
+    private static boolean isSafeId(String s) {
+        return s != null && SAFE_ID.matcher(s).matches();
+    }
+
     private void help(CommandSender s) {
         s.sendMessage("§6§lTrapParty Admin §7- commandes :");
         s.sendMessage(" §e/tpa reload §7- recharger config");
@@ -148,6 +158,18 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             List<String> ids = new ArrayList<>();
             for (var a : plugin.arenas().all()) ids.add(a.getId());
             return ids;
+        }
+        if (args.length == 2 && List.of("forcestart", "forcestop").contains(args[0].toLowerCase())) {
+            List<String> ids = new ArrayList<>();
+            for (var g : plugin.games().all()) ids.add(g.getId());
+            return ids;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
+            return plugin.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
+            return plugin.specialItems().all().stream()
+                    .map(fr.trapparty.items.SpecialItem::id).toList();
         }
         return Collections.emptyList();
     }

@@ -38,6 +38,7 @@ game:
 kit:
   selected: "&aKit sélectionné : &e{kit}&a."
   locked: "&cCe kit est verrouillé."
+  too-late: "&cTrop tard pour changer de kit."
   list-header: "&6&lKits disponibles :"
   open-gui: "&7Ouvre &e/kit&7 pour choisir."
 

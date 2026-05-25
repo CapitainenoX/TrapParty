@@ -117,13 +117,33 @@ public class SpecialItemManager {
         if (id == null) return false;
         SpecialItem def = get(id);
         if (def == null) return false;
-        e.setCancelled(true);
-        // PlayerInteractEvent fire 2x (main+off) — on filtre la main droite
-        if (e.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return true;
+        // PlayerInteractEvent fire 2x (main+off) — on ne traite que la main principale
+        // pour ne PAS canceller les actions de l'off-hand (ex: bouclier).
+        if (e.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return false;
         if (e.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR
                 && e.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return false;
-        boolean consumed = def.onUse(e.getPlayer(), e);
-        if (consumed) decrementUses(e.getPlayer(), in);
+
+        // Les items spéciaux ne fonctionnent qu'EN PARTIE et pendant les phases actives
+        // (sinon : griefing du lobby via grappling hook, TNT remote, drill 3x3x3...).
+        org.bukkit.entity.Player player = e.getPlayer();
+        var game = plugin.games().forPlayer(player);
+        if (game == null) {
+            e.setCancelled(true);
+            plugin.messages().send(player, "generic.not-in-game");
+            return true;
+        }
+        var st = game.getState();
+        boolean activable = st == fr.trapparty.game.GameState.PREPARATION
+                || st == fr.trapparty.game.GameState.COMBAT
+                || st == fr.trapparty.game.GameState.SUDDEN_DEATH;
+        if (!activable) {
+            e.setCancelled(true);
+            return true;
+        }
+
+        e.setCancelled(true);
+        boolean consumed = def.onUse(player, e);
+        if (consumed) decrementUses(player, in);
         return true;
     }
 }

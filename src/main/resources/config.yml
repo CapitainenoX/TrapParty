@@ -24,6 +24,22 @@ game:
   spectator-on-death: true
   allow-rejoin: true
   rejoin-window: 60
+  scoped-chat: true           # le chat des joueurs en partie n'est vu que par cette partie
+  allowed-commands:           # commandes utilisables en partie (anti-cheat)
+    - tparty
+    - tp
+    - trapparty
+    - kit
+    - shop
+    - crafts
+    - special
+    - items
+    - spectate
+    - spec
+    - msg
+    - r
+    - tell
+    - w
   teams:
     enabled: false
     size: 2

@@ -7,6 +7,7 @@ import fr.trapparty.commands.KitCommand;
 import fr.trapparty.commands.ShopCommand;
 import fr.trapparty.commands.SpectateCommand;
 import fr.trapparty.commands.TrapPartyCommand;
+import fr.trapparty.compat.PlaceholderHook;
 import fr.trapparty.compat.VersionAdapter;
 import fr.trapparty.config.ConfigManager;
 import fr.trapparty.config.MessagesManager;
@@ -83,6 +84,10 @@ public final class TrapPartyPlugin extends JavaPlugin {
 
         registerCommands();
         registerListeners();
+
+        // Hook PlaceholderAPI si présent (chargé après nous, donc Bukkit#getPluginManager#getPlugin OK)
+        try { new PlaceholderHook(this).tryRegister(); }
+        catch (Throwable t) { getLogger().fine("PAPI hook skipped: " + t.getMessage()); }
 
         long elapsed = System.currentTimeMillis() - start;
         getLogger().info("TrapParty enabled in " + elapsed + "ms — server " + versionAdapter.describe());

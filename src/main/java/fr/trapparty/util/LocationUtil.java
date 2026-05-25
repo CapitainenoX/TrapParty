@@ -6,9 +6,9 @@ import org.bukkit.World;
 public final class LocationUtil {
     private LocationUtil() {}
 
-    /** Parse "x,y,z" ou "x,y,z,yaw,pitch". */
+    /** Parse "x,y,z" ou "x,y,z,yaw,pitch". Retourne null si world est null (évite p.teleport NPE). */
     public static Location parse(World world, String def) {
-        if (def == null || def.isEmpty()) return null;
+        if (world == null || def == null || def.isEmpty()) return null;
         String[] parts = def.split(",");
         if (parts.length < 3) return null;
         try {

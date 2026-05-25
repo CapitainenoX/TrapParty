@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class KitSelectionGui {
 
-    public static final String GUI_TITLE_CHAR = "";
+    public static final String GUI_TITLE_CHAR = "";
 
     /** Slots fixes pour 8 kits (2 rangées x 4) dans une inv 54 slots. */
     private static final int[] KIT_SLOTS = {
@@ -59,10 +59,9 @@ public class KitSelectionGui {
     public void handleClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player p)) return;
         if (!openInventories.contains(p.getUniqueId())) return;
-        e.setCancelled(true);
-        ItemStack it = e.getCurrentItem();
-        if (it == null) return;
         int slot = e.getRawSlot();
+        if (slot < 0 || slot >= e.getView().getTopInventory().getSize()) return;
+        e.setCancelled(true);
         Map<Integer, Kit> mapping = slotIndex.get(p.getUniqueId());
         if (mapping == null) return;
         Kit k = mapping.get(slot);
@@ -74,6 +73,14 @@ public class KitSelectionGui {
         var game = plugin.games().forPlayer(p);
         if (game == null) {
             plugin.messages().send(p, "generic.not-in-game");
+            return;
+        }
+        // Empêche le kit-switch silencieux en combat
+        var st = game.getState();
+        if (st != fr.trapparty.game.GameState.WAITING
+                && st != fr.trapparty.game.GameState.STARTING
+                && st != fr.trapparty.game.GameState.PREPARATION) {
+            plugin.messages().send(p, "kit.too-late");
             return;
         }
         game.selectKit(p, k);

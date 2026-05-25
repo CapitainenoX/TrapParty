@@ -38,6 +38,9 @@ public class LootChestEvent implements GameEvent {
             target.setY(game.world().getHighestBlockYAt(target) + 1);
         }
         Block b = target.getBlock();
+        // Désenregistre tout piège que le coffre écraserait pour éviter
+        // l'attribution de kills indue à l'ancien owner.
+        plugin.traps().unregister(b.getLocation());
         b.setType(Material.CHEST);
         if (b.getState() instanceof Chest chest) {
             Inventory inv = chest.getInventory();

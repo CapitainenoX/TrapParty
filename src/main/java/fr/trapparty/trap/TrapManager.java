@@ -1,27 +1,30 @@
 package fr.trapparty.trap;
 
 import fr.trapparty.TrapPartyPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Indexe les pièges par localisation (block xyz worldname). Permet
- * d'attribuer un kill quand une entité meurt à cause d'un piège proche.
+ * Indexe les pièges par localisation et attribue les kills à leur owner.
  */
 public class TrapManager {
+
+    private static final long TRIGGER_TTL_MS = 5_000L;
+    private static final long PURGE_MAX_AGE_MS = 60_000L;
 
     private final TrapPartyPlugin plugin;
     private final Map<String, Trap> trapsByBlock = new ConcurrentHashMap<>();
     private final Map<String, Set<String>> trapsByGame = new ConcurrentHashMap<>();
-    // dernière interaction d'un joueur avec un piège (pour death attribution)
     private final Map<UUID, TrapTrigger> lastTrigger = new ConcurrentHashMap<>();
 
     public TrapManager(TrapPartyPlugin plugin) {
         this.plugin = plugin;
+        // Purge périodique des triggers expirés pour éviter le leak mémoire.
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::purgeStaleTriggers, 600L, 600L);
     }
 
     public void register(String gameId, Trap trap) {
@@ -31,13 +34,15 @@ public class TrapManager {
     }
 
     public Trap atBlock(Location loc) {
+        if (loc == null || loc.getWorld() == null) return null;
         return trapsByBlock.get(blockKey(loc));
     }
 
     public void unregister(Location loc) {
-        Trap t = trapsByBlock.remove(blockKey(loc));
-        if (t == null) return;
-        for (Set<String> keys : trapsByGame.values()) keys.remove(blockKey(loc));
+        if (loc == null || loc.getWorld() == null) return;
+        String key = blockKey(loc);
+        trapsByBlock.remove(key);
+        for (Set<String> keys : trapsByGame.values()) keys.remove(key);
     }
 
     public void clearGame(String gameId) {
@@ -53,11 +58,31 @@ public class TrapManager {
     public Trap recentTriggerFor(UUID victim) {
         TrapTrigger t = lastTrigger.get(victim);
         if (t == null) return null;
-        if (System.currentTimeMillis() - t.when > 5000) return null;
+        if (System.currentTimeMillis() - t.when > TRIGGER_TTL_MS) {
+            lastTrigger.remove(victim);
+            return null;
+        }
         return t.trap;
     }
 
-    /** Détermine si un Material posé est un piège (et son type). */
+    /** Consomme et retourne le trigger (utilisé lors d'une mort attribuée). */
+    public Trap consumeTrigger(UUID victim) {
+        TrapTrigger t = lastTrigger.remove(victim);
+        if (t == null) return null;
+        if (System.currentTimeMillis() - t.when > TRIGGER_TTL_MS) return null;
+        return t.trap;
+    }
+
+    /** Appelé lors d'un quit pour nettoyer les caches. */
+    public void forgetTrigger(UUID victim) {
+        lastTrigger.remove(victim);
+    }
+
+    private void purgeStaleTriggers() {
+        long cutoff = System.currentTimeMillis() - PURGE_MAX_AGE_MS;
+        lastTrigger.entrySet().removeIf(e -> e.getValue().when < cutoff);
+    }
+
     public static Trap.Type detectType(Material material) {
         if (material == null) return null;
         return switch (material.name()) {

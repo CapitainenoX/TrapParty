@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CraftsGui {
 
-    public static final String GUI_TITLE_CHAR = "";
+    public static final String GUI_TITLE_CHAR = "";
 
     /** Slots pour les 4 items spéciaux dans une inv 27-slot (3 lignes x 9). */
     private static final int[] ITEM_SLOTS = { 10, 12, 14, 16 };
@@ -73,6 +73,8 @@ public class CraftsGui {
     public void handleClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player p)) return;
         if (!openInventories.contains(p.getUniqueId())) return;
+        int slot = e.getRawSlot();
+        if (slot < 0 || slot >= e.getView().getTopInventory().getSize()) return;
         e.setCancelled(true);
     }
 

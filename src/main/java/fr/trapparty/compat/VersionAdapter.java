@@ -121,13 +121,15 @@ public final class VersionAdapter {
     }
 
     public void sendActionBar(Player player, String text) {
+        // Color codes traduits avant envoi
+        String colored = fr.trapparty.config.MessagesManager.color(text == null ? "" : text);
         // Voie universelle Spigot 1.11+ : BaseComponent via Spigot chat API
         try {
             net.md_5.bungee.api.chat.BaseComponent[] components =
-                    net.md_5.bungee.api.chat.TextComponent.fromLegacyText(text == null ? "" : text);
+                    net.md_5.bungee.api.chat.TextComponent.fromLegacyText(colored);
             player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, components);
         } catch (Throwable t) {
-            player.sendMessage(text);
+            player.sendMessage(colored);
         }
     }
 
