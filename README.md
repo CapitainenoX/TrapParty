@@ -154,6 +154,68 @@ Tout est dans `plugins/TrapParty/` :
 
 `/tpadmin reload` recharge tout à chaud.
 
+## Items spéciaux & resource pack
+
+Le plugin embarque un système d'items spéciaux avec textures custom via un
+resource pack inclus.
+
+### Items disponibles
+
+| Item | Effet | Base | Uses | Coût |
+|------|-------|------|------|------|
+| **Super Foreuse** | Casse un cube 3x3x3 instantanément | NETHERITE_PICKAXE | 6 | 60 |
+| **Activateur à distance** | Place une TNT amorcée jusqu'à 30 blocs | COMPASS | 1 | 45 |
+| **Trap Caller** | Pose un piège aléatoire au bloc visé | BLAZE_ROD | 3 | 50 |
+| **Wind Stomper** | Te propulse + repousse les ennemis | WIND_CHARGE | 2 | 30 |
+| **Faux Bloc** | Bloc piégé qui explose au passage | GRAY_DYE | 3 | 35 |
+| **Grappling Hook** | Projection vers le point visé | FISHING_ROD | 5 | 35 |
+| **Lunette d'Espion** | Glowing 10s sur tous les ennemis | SPYGLASS | 2 | 40 |
+| **Magnet Bomb** | Aspire les ennemis + amorce TNT | AMETHYST_SHARD | 1 | 55 |
+
+### Build & déploiement du resource pack
+
+```bash
+bash scripts/build_pack.sh
+```
+
+Produit `trapparty-pack.zip` (12 Ko) et affiche le SHA-1. Héberge le zip
+sur un CDN HTTPS (par ex. dépôt GitHub Releases, S3, CloudFront…) puis
+mets à jour `config.yml` :
+
+```yaml
+resource-pack:
+  enabled: true
+  url: "https://your-cdn.example/trapparty-pack.zip"
+  sha1: "<output du script>"
+  required: false
+```
+
+Le plugin envoie alors le pack à chaque joueur sur leur première
+connexion.
+
+### Personnaliser
+
+- Modifier les textures : éditer les PNG dans
+  `src/main/resources/resourcepack/assets/trapparty/textures/item/` ou
+  régénérer via `python3 scripts/gen_textures.py`.
+- Ajouter un nouveau special item :
+  1. Créer une classe dans `fr.trapparty.items.impl` qui implémente `SpecialItem`.
+  2. L'enregistrer dans `SpecialItemManager#registerDefaults()`.
+  3. Créer le modèle JSON dans `resourcepack/assets/trapparty/models/item/<id>.json`
+     et la texture PNG.
+  4. Ajouter un override dans `assets/minecraft/items/<base_item>.json` avec
+     un `custom_model_data` unique.
+- Distribuer via commande admin : `/tpa give <player> <item_id>` ou par le
+  shop en jeu (catégorie "Items Spéciaux" via le NETHER_STAR).
+- Donner directement aux kits via `kits.yml` :
+
+  ```yaml
+  engineer:
+    special-items:
+      - super_drill
+      - remote_activator
+  ```
+
 ## Roadmap (idées)
 
 - [ ] Mode équipes (toggle déjà dans `config.yml`).

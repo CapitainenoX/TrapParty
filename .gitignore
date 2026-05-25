@@ -11,3 +11,5 @@ build/
 out/
 .gradle/
 dependency-reduced-pom.xml
+trapparty-pack.zip
+javac.*.args

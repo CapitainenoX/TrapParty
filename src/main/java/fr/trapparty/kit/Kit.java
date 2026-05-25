@@ -18,9 +18,11 @@ public class Kit {
     private final Map<String, ItemStack> items;     // slot key -> item
     private final List<EffectDef> effects;
     private final int extraCoins;
+    private final List<String> specialItemIds;       // IDs d'items spéciaux à donner
 
     public Kit(String id, String displayName, Material icon, List<String> description,
-               String permission, Map<String, ItemStack> items, List<EffectDef> effects, int extraCoins) {
+               String permission, Map<String, ItemStack> items, List<EffectDef> effects, int extraCoins,
+               List<String> specialItemIds) {
         this.id = id;
         this.displayName = displayName;
         this.icon = icon;
@@ -29,6 +31,7 @@ public class Kit {
         this.items = items;
         this.effects = effects;
         this.extraCoins = extraCoins;
+        this.specialItemIds = specialItemIds == null ? Collections.emptyList() : specialItemIds;
     }
 
     public void apply(Player p) {
@@ -54,6 +57,13 @@ public class Kit {
             p.getInventory().setItem(idx, e.getValue());
         }
         for (EffectDef ed : effects) ed.apply(p);
+        // items spéciaux
+        var mgr = fr.trapparty.TrapPartyPlugin.get().specialItems();
+        for (String sid : specialItemIds) {
+            var def = mgr.get(sid);
+            if (def == null) continue;
+            p.getInventory().addItem(mgr.build(def));
+        }
     }
 
     public String getId() { return id; }

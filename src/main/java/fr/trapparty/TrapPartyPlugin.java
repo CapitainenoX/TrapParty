@@ -11,9 +11,11 @@ import fr.trapparty.config.ConfigManager;
 import fr.trapparty.config.MessagesManager;
 import fr.trapparty.events.EventManager;
 import fr.trapparty.game.GameManager;
+import fr.trapparty.items.SpecialItemManager;
 import fr.trapparty.kit.KitManager;
 import fr.trapparty.listeners.GameListener;
 import fr.trapparty.listeners.PlayerListener;
+import fr.trapparty.listeners.SpecialItemListener;
 import fr.trapparty.listeners.TrapListener;
 import fr.trapparty.shop.ShopManager;
 import fr.trapparty.stats.StatsManager;
@@ -39,6 +41,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
     private ShopManager shopManager;
     private TrapManager trapManager;
     private EventManager eventManager;
+    private SpecialItemManager specialItemManager;
     private StatsManager statsManager;
     private GameManager gameManager;
     private ScoreboardManager scoreboardManager;
@@ -60,6 +63,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
         this.kitManager = new KitManager(this);
         this.shopManager = new ShopManager(this);
         this.trapManager = new TrapManager(this);
+        this.specialItemManager = new SpecialItemManager(this);
         this.worldManager = new WorldManager(this);
         this.arenaManager = new ArenaManager(this);
         this.eventManager = new EventManager(this);
@@ -118,6 +122,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameListener(this), this);
         Bukkit.getPluginManager().registerEvents(new TrapListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SpecialItemListener(this), this);
     }
 
     public void reloadAll() {
@@ -139,6 +144,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
     public ShopManager shop() { return shopManager; }
     public TrapManager traps() { return trapManager; }
     public EventManager events() { return eventManager; }
+    public SpecialItemManager specialItems() { return specialItemManager; }
     public StatsManager stats() { return statsManager; }
     public GameManager games() { return gameManager; }
     public ScoreboardManager scoreboards() { return scoreboardManager; }

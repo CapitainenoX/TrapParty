@@ -96,3 +96,13 @@ performance:
   max-arenas: 16
   particle-distance: 64
   sound-distance: 48
+
+resource-pack:
+  # Active l'envoi automatique du resource pack TrapParty aux joueurs.
+  # Tu dois zipper le dossier `resourcepack/` (voir README) et l'héberger
+  # sur un CDN/URL HTTPS publique, puis renseigner l'URL et le hash SHA-1.
+  enabled: false
+  url: ""
+  sha1: ""        # 40-char hex SHA-1 du zip ; calculé via `sha1sum trapparty-pack.zip`
+  required: false # si true : kick si refusé
+  prompt: "&c&lTrapParty&r&7 recommande son resource pack pour profiter de tous les items spéciaux."

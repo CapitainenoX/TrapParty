@@ -65,7 +65,7 @@ kits:
     description:
       - "&7Rapide et furtif"
       - "&7Dégâts critiques sur surprise"
-      - "&7Très fragile"
+      - "&5✦ Grappin + Lunette d'espion"
     permission: trapparty.kit.assassin
     items:
       helmet: LEATHER_HELMET
@@ -76,6 +76,9 @@ kits:
       slot0: "ENCHANTED_GOLDEN_APPLE|GOLDEN_APPLE:2"
       slot1: ENDER_PEARL:2
       slot2: "WIND_CHARGE|SNOWBALL:4"
+    special-items:
+      - grappling_hook
+      - spy_lens
     effects:
       - SPEED:-1:1
 
@@ -85,6 +88,7 @@ kits:
     description:
       - "&7Spécialiste des pièges"
       - "&7Inventaire de départ rempli"
+      - "&d✦ Trap Caller + Decoy Block"
     permission: trapparty.kit.trapmaster
     items:
       helmet: CHAINMAIL_HELMET
@@ -100,6 +104,9 @@ kits:
       slot5: LAVA_BUCKET:2
       slot6: COOKED_BEEF:6
       slot7: "WIND_CHARGE|FIRE_CHARGE:4"
+    special-items:
+      - trap_caller
+      - decoy_block
     extra-coins: 25
 
   engineer:
@@ -108,7 +115,7 @@ kits:
     description:
       - "&7Maître de la redstone"
       - "&7Construction rapide"
-      - "&7Outils renforcés"
+      - "&b✦ Super Foreuse + Activateur"
     permission: trapparty.kit.engineer
     items:
       helmet: "COPPER_HELMET|CHAINMAIL_HELMET"
@@ -124,6 +131,9 @@ kits:
       slot5: "OBSERVER|REDSTONE_TORCH:4"
       slot6: "CRAFTER|CRAFTING_TABLE:2"
       slot7: COOKED_BEEF:6
+    special-items:
+      - super_drill
+      - remote_activator
     effects:
       - HASTE:-1:1
 
@@ -173,7 +183,7 @@ kits:
     description:
       - "&7Combat aérien"
       - "&7Wind Charges illimitées"
-      - "&7Saut amélioré"
+      - "&3✦ Wind Stomper inclus"
     permission: trapparty.kit.breezer
     items:
       helmet: "CHAINMAIL_HELMET"
@@ -185,6 +195,8 @@ kits:
       slot1: "WIND_CHARGE|SNOWBALL:16"
       slot2: "STONE_SWORD"
       slot3: COOKED_BEEF:6
+    special-items:
+      - wind_stomper
     effects:
       - JUMP_BOOST:-1:2
       - SPEED:-1:0

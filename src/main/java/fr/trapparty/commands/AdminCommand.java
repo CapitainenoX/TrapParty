@@ -94,6 +94,27 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 plugin.stats().flush();
                 sender.sendMessage("§aStats sauvegardées.");
             }
+            case "give" -> {
+                if (args.length < 3) {
+                    sender.sendMessage("§c/tpa give <player> <special-item-id>");
+                    sender.sendMessage("§7IDs : " + String.join(", ",
+                            plugin.specialItems().all().stream()
+                                    .map(fr.trapparty.items.SpecialItem::id).toList()));
+                    return true;
+                }
+                Player target = plugin.getServer().getPlayerExact(args[1]);
+                if (target == null) { sender.sendMessage("§cJoueur introuvable."); return true; }
+                fr.trapparty.items.SpecialItem item = plugin.specialItems().get(args[2]);
+                if (item == null) { sender.sendMessage("§cItem inconnu."); return true; }
+                target.getInventory().addItem(plugin.specialItems().build(item));
+                sender.sendMessage("§aDonné §e" + item.id() + "§a à §e" + target.getName());
+            }
+            case "items" -> {
+                sender.sendMessage("§6Items spéciaux :");
+                for (fr.trapparty.items.SpecialItem si : plugin.specialItems().all()) {
+                    sender.sendMessage(" §8» §e" + si.id() + " §7- " + si.displayName());
+                }
+            }
             default -> help(sender);
         }
         return true;
@@ -110,13 +131,15 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         s.sendMessage(" §e/tpa forcestop <gameId>");
         s.sendMessage(" §e/tpa debug §7- toggle debug");
         s.sendMessage(" §e/tpa save §7- flush stats");
+        s.sendMessage(" §e/tpa give <player> <item-id> §7- donner un item spécial");
+        s.sendMessage(" §e/tpa items §7- lister les items spéciaux");
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> sub = new ArrayList<>(List.of("reload", "create", "delete", "setspawn", "setcenter",
-                    "forcestart", "forcestop", "debug", "save"));
+                    "forcestart", "forcestop", "debug", "save", "give", "items"));
             List<String> out = new ArrayList<>();
             StringUtil.copyPartialMatches(args[0], sub, out);
             return out;

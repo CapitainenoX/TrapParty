@@ -63,7 +63,8 @@ public class KitManager {
             if (ed != null) effects.add(ed);
         }
         int extraCoins = s.getInt("extra-coins", 0);
-        return new Kit(id, display, icon, desc, perm, items, effects, extraCoins);
+        List<String> specials = s.getStringList("special-items");
+        return new Kit(id, display, icon, desc, perm, items, effects, extraCoins, specials);
     }
 
     public Kit get(String id) {

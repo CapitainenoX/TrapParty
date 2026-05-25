@@ -77,7 +77,41 @@ public class ShopManager {
                     .lore("§7Clique pour ouvrir.")
                     .build());
         }
+        // Catégorie "special" pour les items spéciaux (modèle resource pack custom)
+        inv.setItem(40, new ItemBuilder(Material.NETHER_STAR)
+                .name("&d&l✦ Items Spéciaux")
+                .lore("§7Outils &dpremium&7 :",
+                        "§7super foreuse, activateur,",
+                        "§7grappin, magnet bomb...",
+                        " ",
+                        "§7Clique pour ouvrir.")
+                .glow()
+                .build());
         openCategory.remove(p.getUniqueId());
+        openShopInventories.add(p.getUniqueId());
+        p.openInventory(inv);
+    }
+
+    public void openSpecialItems(Player p) {
+        Inventory inv = Bukkit.createInventory(null, 36,
+                plugin.messages().get("shop.opened") + " §8» §dSpécial");
+        int slot = 10;
+        for (fr.trapparty.items.SpecialItem item : plugin.specialItems().all()) {
+            if (item.cost() < 0) continue;
+            org.bukkit.inventory.ItemStack stack = plugin.specialItems().build(item);
+            java.util.List<String> lore = new java.util.ArrayList<>();
+            if (stack.getItemMeta() != null && stack.getItemMeta().getLore() != null) {
+                lore.addAll(stack.getItemMeta().getLore());
+            }
+            lore.add(" ");
+            lore.add("§6Coût : §e" + item.cost() + " pièces");
+            lore.add("§7Clique pour acheter.");
+            org.bukkit.inventory.ItemStack icon = new ItemBuilder(stack).lore(lore).build();
+            inv.setItem(slot++, icon);
+            if (slot == 17) slot = 19;
+            if (slot >= 35) break;
+        }
+        openCategory.put(p.getUniqueId(), "__special__");
         openShopInventories.add(p.getUniqueId());
         p.openInventory(inv);
     }
@@ -118,10 +152,15 @@ public class ShopManager {
 
         String cat = openCategory.get(p.getUniqueId());
         if (cat == null) {
-            // niveau catégories
+            // niveau catégories : detect special button
+            if (clicked.getType() == Material.NETHER_STAR) { openSpecialItems(p); return; }
             for (ShopCategory c : categories.values()) {
                 if (c.getIcon() == clicked.getType()) { openCategory(p, c); return; }
             }
+            return;
+        }
+        if (cat.equals("__special__")) {
+            buySpecial(p, clicked);
             return;
         }
         ShopCategory category = category(cat);
@@ -180,5 +219,27 @@ public class ShopManager {
                 "item", item.getMaterial().name(),
                 "amount", String.valueOf(item.getCost())));
         plugin.version().sound(p, "ENTITY_EXPERIENCE_ORB_PICKUP", 1f, 1.6f);
+    }
+
+    /** Achat d'un item spécial via son matériau d'icône (les icônes sont uniques). */
+    private void buySpecial(Player p, ItemStack clicked) {
+        // L'item cliqué porte déjà la metadata du SpecialItem (id PDC)
+        String id = plugin.specialItems().idOf(clicked);
+        if (id == null) return;
+        fr.trapparty.items.SpecialItem def = plugin.specialItems().get(id);
+        if (def == null || def.cost() < 0) return;
+        fr.trapparty.game.Game g = plugin.games().forPlayer(p);
+        if (g == null) { plugin.messages().send(p, "generic.not-in-game"); return; }
+        fr.trapparty.game.GamePlayer gp = g.getPlayer(p.getUniqueId());
+        if (gp == null) return;
+        if (!gp.spend(def.cost())) {
+            plugin.messages().send(p, "shop.not-enough", Map.of("amount", String.valueOf(def.cost())));
+            return;
+        }
+        p.getInventory().addItem(plugin.specialItems().build(def));
+        plugin.messages().send(p, "shop.bought", Map.of(
+                "item", def.id(),
+                "amount", String.valueOf(def.cost())));
+        plugin.version().sound(p, "BLOCK_ENCHANTMENT_TABLE_USE", 1f, 1.5f);
     }
 }

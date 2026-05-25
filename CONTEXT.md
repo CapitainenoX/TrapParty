@@ -64,5 +64,19 @@ WAITING → STARTING → PREPARATION → COMBAT → SUDDEN_DEATH → ENDING → 
 - MultiVerse : soft-depend, reflection multi-version (package detection)
 - Toutes les commandes & GUIs sont câblées
 
+## Items spéciaux + resource pack
+Système `SpecialItem` (PersistentDataContainer + CustomModelData) avec 8 items :
+super_drill (3x3x3), remote_activator (TNT à 30m), trap_caller (piège
+aléatoire), wind_stomper (push), decoy_block (fausse pierre piégée),
+grappling_hook (25m), spy_lens (glowing 10s), magnet_bomb (aspire+TNT).
+
+Resource pack dans `src/main/resources/resourcepack/` (pack_format 84, MC 26.1) :
+- 8 PNG 16x16 générées par `scripts/gen_textures.py`
+- Overrides vanilla via `assets/minecraft/items/*.json` (range_dispatch sur custom_model_data 1001-1008)
+- Modèles custom dans `assets/trapparty/models/item/*.json`
+- Langs FR/EN
+- Build via `scripts/build_pack.sh` → trapparty-pack.zip + SHA-1
+- Envoi automatique aux joueurs via `config.yml > resource-pack`
+
 ## Statut
-✅ Initial version + upgrade Paper 26.1.2 / MV-Core 5.6.1 / nouveaux kits 1.21+
+✅ Initial + upgrade 26.1.2 + items spéciaux + resource pack
