@@ -25,7 +25,6 @@ public class SuperDrill implements SpecialItem {
                 "&7Récupère les blocs cassés.");
     }
     @Override public String baseMaterial() { return "NETHERITE_PICKAXE|DIAMOND_PICKAXE|IRON_PICKAXE"; }
-    @Override public int customModelData() { return 1001; }
     @Override public int maxUses() { return 6; }
     @Override public int cost() { return 60; }
     @Override public String shopCategory() { return "utility"; }

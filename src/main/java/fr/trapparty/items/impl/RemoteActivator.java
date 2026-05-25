@@ -28,7 +28,6 @@ public class RemoteActivator implements SpecialItem {
                 "&8Usage unique.");
     }
     @Override public String baseMaterial() { return "COMPASS"; }
-    @Override public int customModelData() { return 1002; }
     @Override public int maxUses() { return 1; }
     @Override public int cost() { return 45; }
     @Override public String shopCategory() { return "traps"; }

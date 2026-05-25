@@ -64,21 +64,28 @@ WAITING → STARTING → PREPARATION → COMBAT → SUDDEN_DEATH → ENDING → 
 - MultiVerse : soft-depend, reflection multi-version (package detection)
 - Toutes les commandes & GUIs sont câblées
 
-## Items spéciaux + resource pack
-Système `SpecialItem` (PersistentDataContainer + CustomModelData) avec 8 items :
-super_drill (3x3x3), remote_activator (TNT à 30m), trap_caller (piège
-aléatoire), wind_stomper (push), decoy_block (fausse pierre piégée),
-grappling_hook (25m), spy_lens (glowing 10s), magnet_bomb (aspire+TNT).
+## Items spéciaux (4 essentiels, pas de texture custom)
+Système `SpecialItem` (PersistentDataContainer + glow d'enchantement).
+Visuellement ce sont les items vanilla — pas de modèle custom.
 
-Resource pack dans `src/main/resources/resourcepack/` (pack_format 84, MC 26.1) :
-- 22 PNG 16x16 **vides** (transparent) étiquetés, à designer manuellement
-- Doc complète des textures dans `resourcepack/TEXTURES.md` (mapping
-  fichier → base material → custom_model_data → rôle)
+- **super_drill** (NETHERITE_PICKAXE) : casse un cube 3x3x3
+- **remote_activator** (COMPASS) : TNT amorcée jusqu'à 30 blocs
+- **trap_caller** (BLAZE_ROD) : piège aléatoire au bloc visé
+- **grappling_hook** (FISHING_ROD) : projection 25 blocs
+
+## Resource pack — menu uniquement
+`src/main/resources/resourcepack/` (pack_format 84, MC 26.1) :
+- 14 PNG 16×16 **vides** uniquement pour le menu shop
+  (7 boutons catégorie + currency + buy/locked + back/close + border + logo)
+- `TEXTURES.md` : prompts **Nano Banana** prêts à copier pour générer
+  chaque texture, avec mapping fichier → base material → CMD → rôle
 - Overrides vanilla via `assets/minecraft/items/*.json` (range_dispatch)
-  - 8 items spéciaux (CMD 1001-1008)
-  - 14 éléments d'UI shop (CMD 2001-2031)
-- Modèles custom dans `assets/trapparty/models/item/*.json`
-- Langs FR/EN
+  - PAS d'overrides pour les special items — ils restent visuellement
+    vanilla avec un glow d'enchantement
+  - 8 overrides pour les éléments UI (paper, gold_nugget, lime_dye,
+    red_dye, arrow, barrier, white_stained_glass_pane, nether_star)
+- Modèles custom dans `assets/trapparty/models/item/*.json` (14 menu)
+- Langs FR/EN (4 entrées de noms d'items spéciaux)
 - Build via `scripts/build_pack.sh` → `trapparty-pack.zip` + SHA-1
 - Envoi automatique aux joueurs via `config.yml > resource-pack`
 

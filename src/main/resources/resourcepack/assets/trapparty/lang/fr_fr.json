@@ -2,9 +2,5 @@
   "item.trapparty.super_drill": "Super Foreuse",
   "item.trapparty.remote_activator": "Activateur à distance",
   "item.trapparty.trap_caller": "Trap Caller",
-  "item.trapparty.wind_stomper": "Wind Stomper",
-  "item.trapparty.decoy_block": "Faux Bloc",
-  "item.trapparty.grappling_hook": "Grappling Hook",
-  "item.trapparty.spy_lens": "Lunette d'Espion",
-  "item.trapparty.magnet_bomb": "Magnet Bomb"
+  "item.trapparty.grappling_hook": "Grappling Hook"
 }

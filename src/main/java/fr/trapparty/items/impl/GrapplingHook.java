@@ -24,7 +24,6 @@ public class GrapplingHook implements SpecialItem {
                 "&7Portée : &e25 blocs");
     }
     @Override public String baseMaterial() { return "FISHING_ROD"; }
-    @Override public int customModelData() { return 1006; }
     @Override public int maxUses() { return 5; }
     @Override public int cost() { return 35; }
     @Override public String shopCategory() { return "mobility"; }

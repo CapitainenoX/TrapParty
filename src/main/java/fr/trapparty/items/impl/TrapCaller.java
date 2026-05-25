@@ -31,7 +31,6 @@ public class TrapCaller implements SpecialItem {
                 "&7Toile / Magma / Cactus / Dripstone / Lave / TNT.");
     }
     @Override public String baseMaterial() { return "BLAZE_ROD"; }
-    @Override public int customModelData() { return 1003; }
     @Override public int maxUses() { return 3; }
     @Override public int cost() { return 50; }
     @Override public String shopCategory() { return "traps"; }

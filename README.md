@@ -156,21 +156,19 @@ Tout est dans `plugins/TrapParty/` :
 
 ## Items spéciaux & resource pack
 
-Le plugin embarque un système d'items spéciaux avec textures custom via un
-resource pack inclus.
+Le plugin embarque 4 items spéciaux essentiels. Ils ne sont **pas**
+texturés via le resource pack : visuellement ce sont les items vanilla
+correspondants avec un *glow* d'enchantement, un nom personnalisé et de
+la lore. Le resource pack est dédié au **menu du shop**.
 
 ### Items disponibles
 
-| Item | Effet | Base | Uses | Coût |
-|------|-------|------|------|------|
-| **Super Foreuse** | Casse un cube 3x3x3 instantanément | NETHERITE_PICKAXE | 6 | 60 |
-| **Activateur à distance** | Place une TNT amorcée jusqu'à 30 blocs | COMPASS | 1 | 45 |
-| **Trap Caller** | Pose un piège aléatoire au bloc visé | BLAZE_ROD | 3 | 50 |
-| **Wind Stomper** | Te propulse + repousse les ennemis | WIND_CHARGE | 2 | 30 |
-| **Faux Bloc** | Bloc piégé qui explose au passage | GRAY_DYE | 3 | 35 |
-| **Grappling Hook** | Projection vers le point visé | FISHING_ROD | 5 | 35 |
-| **Lunette d'Espion** | Glowing 10s sur tous les ennemis | SPYGLASS | 2 | 40 |
-| **Magnet Bomb** | Aspire les ennemis + amorce TNT | AMETHYST_SHARD | 1 | 55 |
+| Item | Effet | Base material | Uses | Coût |
+|------|-------|---------------|------|------|
+| **Super Foreuse** | Casse un cube 3x3x3 instantanément | `NETHERITE_PICKAXE` | 6 | 60 |
+| **Activateur à distance** | Place une TNT amorcée jusqu'à 30 blocs | `COMPASS` | 1 | 45 |
+| **Trap Caller** | Pose un piège aléatoire au bloc visé | `BLAZE_ROD` | 3 | 50 |
+| **Grappling Hook** | Projection vers le point visé (25m) | `FISHING_ROD` | 5 | 35 |
 
 ### Build & déploiement du resource pack
 
@@ -195,20 +193,20 @@ connexion.
 
 ### Personnaliser
 
-- **Textures** : les PNG dans
+- **Textures du menu shop** : les 14 PNG dans
   `src/main/resources/resourcepack/assets/trapparty/textures/item/` sont
   fournis vides (16×16 transparent) et étiquetés. Tu peux les remplacer
-  par tes propres designs en gardant le même nom de fichier.
-  La doc complète des textures (à quoi correspond chaque PNG, base item,
-  custom_model_data) est dans
-  [`resourcepack/TEXTURES.md`](src/main/resources/resourcepack/TEXTURES.md).
+  par tes propres designs en gardant les mêmes noms de fichier.
+  Le fichier [`resourcepack/TEXTURES.md`](src/main/resources/resourcepack/TEXTURES.md)
+  contient **un prompt Nano Banana prêt à copier pour chaque texture** —
+  ouvre Nano Banana, colle le prompt, télécharge le PNG, downscale en
+  16×16 si besoin.
 - **Ajouter un nouveau special item** :
   1. Créer une classe dans `fr.trapparty.items.impl` qui implémente `SpecialItem`.
   2. L'enregistrer dans `SpecialItemManager#registerDefaults()`.
-  3. Créer le modèle JSON dans `resourcepack/assets/trapparty/models/item/<id>.json`
-     et la texture PNG (16×16).
-  4. Ajouter un override dans `assets/minecraft/items/<base_item>.json` avec
-     un `custom_model_data` unique.
+
+  Les special items ne nécessitent **aucun** fichier resource pack — ils
+  utilisent l'apparence du base material avec un glow d'enchantement.
 - **Distribuer** via commande admin : `/tpa give <player> <item_id>` ou par
   le shop en jeu (catégorie "Items Spéciaux").
 - **Donner directement aux kits** via `kits.yml` :

@@ -1,15 +1,15 @@
 package fr.trapparty.items;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
 /**
- * Item spécial : objet à pouvoirs custom, identifié par PersistentDataContainer.
- * Le SpecialItemManager dispatche les events Bukkit vers l'implémentation.
+ * Item spécial : objet à pouvoir custom, identifié par PersistentDataContainer.
+ * Pas de texture custom — visuellement c'est juste le base material avec
+ * un glow d'enchantement, un nom unique et de la lore. La logique
+ * d'activation est dispatchée par SpecialItemManager via PlayerInteractEvent.
  */
 public interface SpecialItem {
 
@@ -22,11 +22,8 @@ public interface SpecialItem {
     /** Description multi-lignes. */
     List<String> lore();
 
-    /** Matériau de base (déterminé par fallback "MAT|FALL1|FALL2"). */
+    /** Matériau de base, syntaxe fallback "MAT|FALL1|FALL2". */
     String baseMaterial();
-
-    /** Identifiant numérique CustomModelData (1001-1999 réservés). */
-    int customModelData();
 
     /** Nombre d'utilisations max (-1 = illimité). */
     default int maxUses() { return -1; }

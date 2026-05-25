@@ -37,11 +37,7 @@ public class SpecialItemManager {
         register(new SuperDrill());
         register(new RemoteActivator());
         register(new TrapCaller());
-        register(new WindStomper());
-        register(new DecoyBlock());
         register(new GrapplingHook());
-        register(new SpyLens());
-        register(new MagnetBomb());
     }
 
     public void register(SpecialItem item) {
@@ -51,7 +47,11 @@ public class SpecialItemManager {
     public Collection<SpecialItem> all() { return Collections.unmodifiableCollection(items.values()); }
     public SpecialItem get(String id) { return id == null ? null : items.get(id.toLowerCase(Locale.ROOT)); }
 
-    /** Construit l'ItemStack final, avec metadata persistant. */
+    /**
+     * Construit l'ItemStack final. Pas de texture custom : le rendu visuel
+     * vient du base material + glow d'enchantement. Le nom et la lore
+     * identifient l'item, et le PDC porte l'id pour le dispatch d'events.
+     */
     public ItemStack build(SpecialItem def) {
         Material mat = ItemBuilder.resolveMaterial(def.baseMaterial());
         if (mat == null) mat = Material.STICK;
@@ -59,18 +59,16 @@ public class SpecialItemManager {
         lore.add(" ");
         if (def.maxUses() > 0) lore.add("§7Utilisations : §a" + def.maxUses());
         lore.add("§eClic droit§7 pour utiliser.");
-        ItemStack stack = new ItemBuilder(mat)
+        return new ItemBuilder(mat)
                 .name(def.displayName())
                 .lore(lore)
                 .meta(m -> {
                     PersistentDataContainer c = m.getPersistentDataContainer();
                     c.set(KEY_ID, PersistentDataType.STRING, def.id());
                     c.set(KEY_USES, PersistentDataType.INTEGER, def.maxUses());
-                    // CustomModelData pour mapping resource pack
-                    try { m.setCustomModelData(def.customModelData()); } catch (Throwable ignored) {}
                 })
+                .glow()
                 .build();
-        return stack;
     }
 
     public String idOf(ItemStack stack) {
