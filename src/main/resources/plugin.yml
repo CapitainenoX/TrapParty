@@ -1,0 +1,64 @@
+name: TrapParty
+version: ${project.version}
+main: fr.trapparty.TrapPartyPlugin
+api-version: '1.13'
+authors: [CapitainenoX]
+description: Premium Trap Survival mini-game with traps, kits, and dynamic arenas.
+website: https://github.com/CapitainenoX/TrapParty
+softdepend: [Multiverse-Core, PlaceholderAPI]
+
+commands:
+  trapparty:
+    description: Main TrapParty command.
+    aliases: [tp, tparty]
+    usage: /<command> help
+  tpadmin:
+    description: TrapParty admin tools.
+    aliases: [tpa]
+    permission: trapparty.admin
+    usage: /<command> help
+  kit:
+    description: Choose your kit.
+    usage: /<command> [kit]
+  shop:
+    description: Open the in-game shop.
+    usage: /<command>
+  spectate:
+    description: Spectate a running game.
+    aliases: [spec]
+    usage: /<command> [arena]
+
+permissions:
+  trapparty.*:
+    description: All TrapParty permissions.
+    default: op
+    children:
+      trapparty.play: true
+      trapparty.admin: true
+      trapparty.kit.*: true
+      trapparty.shop: true
+      trapparty.spectate: true
+  trapparty.play:
+    description: Join a game.
+    default: true
+  trapparty.spectate:
+    description: Spectate games.
+    default: true
+  trapparty.shop:
+    description: Access the shop.
+    default: true
+  trapparty.kit.tank:
+    default: true
+  trapparty.kit.archer:
+    default: true
+  trapparty.kit.assassin:
+    default: true
+  trapparty.kit.trapmaster:
+    default: true
+  trapparty.kit.engineer:
+    default: true
+  trapparty.kit.berserker:
+    default: true
+  trapparty.admin:
+    description: Admin access.
+    default: op

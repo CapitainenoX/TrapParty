@@ -1,0 +1,77 @@
+# =====================================================
+#  TrapParty - shop.yml
+# =====================================================
+# free: true  -> item gratuit (cooldown global free-item-cooldown)
+# cost: X     -> coût en pièces
+# Categories : blocks, traps, utility, consumables, redstone, mobility
+
+categories:
+  blocks:
+    display: "&7&lBlocs"
+    icon: COBBLESTONE
+    slot: 10
+    items:
+      - { material: COBBLESTONE, amount: 16, cost: 0, free: true }
+      - { material: COBBLESTONE, amount: 64, cost: 15 }
+      - { material: OAK_PLANKS, amount: 32, cost: 10 }
+      - { material: OBSIDIAN, amount: 4, cost: 35 }
+      - { material: GLASS, amount: 16, cost: 8 }
+      - { material: SLIME_BLOCK, amount: 4, cost: 12 }
+
+  traps:
+    display: "&c&lPièges"
+    icon: TNT
+    slot: 12
+    items:
+      - { material: TNT, amount: 2, cost: 20 }
+      - { material: COBWEB, amount: 4, cost: 10 }
+      - { material: TRIPWIRE_HOOK, amount: 2, cost: 5 }
+      - { material: STRING, amount: 8, cost: 4 }
+      - { material: LAVA_BUCKET, amount: 1, cost: 25 }
+      - { material: MAGMA_BLOCK, amount: 4, cost: 12 }
+      - { material: SOUL_SAND, amount: 4, cost: 8 }
+      - { material: CACTUS, amount: 4, cost: 6 }
+
+  utility:
+    display: "&b&lUtilitaires"
+    icon: SHIELD
+    slot: 14
+    items:
+      - { material: SHIELD, cost: 20 }
+      - { material: BOW, cost: 25 }
+      - { material: ARROW, amount: 8, cost: 8 }
+      - { material: FISHING_ROD, cost: 18 }
+      - { material: FLINT_AND_STEEL, cost: 10 }
+      - { material: WATER_BUCKET, cost: 15 }
+
+  consumables:
+    display: "&a&lConsommables"
+    icon: COOKED_BEEF
+    slot: 16
+    items:
+      - { material: COOKED_BEEF, amount: 4, cost: 0, free: true }
+      - { material: GOLDEN_APPLE, cost: 30 }
+      - { material: MILK_BUCKET, cost: 15 }
+      - { material: POTION, cost: 25, potion: HEALING }
+
+  redstone:
+    display: "&4&lRedstone"
+    icon: REDSTONE
+    slot: 28
+    items:
+      - { material: REDSTONE, amount: 16, cost: 6 }
+      - { material: REDSTONE_TORCH, amount: 4, cost: 5 }
+      - { material: REPEATER, amount: 2, cost: 8 }
+      - { material: PISTON, amount: 2, cost: 12 }
+      - { material: STICKY_PISTON, cost: 10 }
+      - { material: OBSERVER, amount: 2, cost: 15 }
+
+  mobility:
+    display: "&e&lMobilité"
+    icon: ENDER_PEARL
+    slot: 30
+    items:
+      - { material: ENDER_PEARL, cost: 25 }
+      - { material: FEATHER, cost: 5 }
+      - { material: SLIME_BLOCK, amount: 2, cost: 6 }
+      - { material: SCAFFOLDING, amount: 8, cost: 10 }

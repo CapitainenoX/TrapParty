@@ -1,0 +1,130 @@
+# =====================================================
+#  TrapParty - kits.yml
+# =====================================================
+# Format des items : MATERIAL[:amount][:enchant=level,...]
+# Effets : POTION_EFFECT:duration_ticks:amplifier (duration=-1 pour partie complète)
+# duration=-1 signifie permanent (durée partie).
+
+kits:
+  tank:
+    display-name: "&7&lTANK"
+    icon: IRON_CHESTPLATE
+    description:
+      - "&7Résistant aux dégâts"
+      - "&7Armure renforcée"
+      - "&7Lent mais robuste"
+    permission: trapparty.kit.tank
+    items:
+      helmet: IRON_HELMET
+      chestplate: IRON_CHESTPLATE
+      leggings: IRON_LEGGINGS
+      boots: IRON_BOOTS
+      mainhand: IRON_SWORD
+      offhand: SHIELD
+      slot0: COOKED_BEEF:8
+      slot1: COBBLESTONE:32
+    effects:
+      - DAMAGE_RESISTANCE:-1:0
+      - SLOWNESS:-1:0
+
+  archer:
+    display-name: "&a&lARCHER"
+    icon: BOW
+    description:
+      - "&7Tir précis et rapide"
+      - "&7Flèches infinies"
+      - "&7Faible en armure"
+    permission: trapparty.kit.archer
+    items:
+      helmet: CHAINMAIL_HELMET
+      chestplate: LEATHER_CHESTPLATE
+      leggings: LEATHER_LEGGINGS
+      boots: LEATHER_BOOTS
+      mainhand: BOW:1:POWER=2,INFINITY=1
+      offhand: ARROW:1
+      slot0: STONE_SWORD
+      slot1: COOKED_BEEF:6
+      slot2: ARROW:1
+    effects:
+      - SPEED:-1:0
+
+  assassin:
+    display-name: "&5&lASSASSIN"
+    icon: IRON_SWORD
+    description:
+      - "&7Rapide et invisible"
+      - "&7Dégâts critiques sur surprise"
+      - "&7Très fragile"
+    permission: trapparty.kit.assassin
+    items:
+      helmet: LEATHER_HELMET
+      chestplate: LEATHER_CHESTPLATE
+      leggings: LEATHER_LEGGINGS
+      boots: LEATHER_BOOTS
+      mainhand: IRON_SWORD:1:SHARPNESS=2
+      slot0: GOLDEN_APPLE:2
+      slot1: ENDER_PEARL:2
+    effects:
+      - SPEED:-1:1
+
+  trapmaster:
+    display-name: "&6&lTRAP MASTER"
+    icon: TRIPWIRE_HOOK
+    description:
+      - "&7Spécialiste des pièges"
+      - "&7Coûts de pièges réduits"
+      - "&7Inventaire de départ rempli"
+    permission: trapparty.kit.trapmaster
+    items:
+      helmet: CHAINMAIL_HELMET
+      chestplate: CHAINMAIL_CHESTPLATE
+      leggings: CHAINMAIL_LEGGINGS
+      boots: CHAINMAIL_BOOTS
+      mainhand: STONE_SWORD
+      slot0: TNT:8
+      slot1: COBWEB:8
+      slot2: TRIPWIRE_HOOK:8
+      slot3: STRING:16
+      slot4: REDSTONE:32
+      slot5: LAVA_BUCKET:2
+      slot6: COOKED_BEEF:6
+    extra-coins: 25
+
+  engineer:
+    display-name: "&b&lENGINEER"
+    icon: REDSTONE
+    description:
+      - "&7Maître de la redstone"
+      - "&7Construction rapide"
+      - "&7Outils renforcés"
+    permission: trapparty.kit.engineer
+    items:
+      helmet: CHAINMAIL_HELMET
+      chestplate: IRON_CHESTPLATE
+      leggings: CHAINMAIL_LEGGINGS
+      boots: CHAINMAIL_BOOTS
+      mainhand: IRON_PICKAXE:1:EFFICIENCY=3
+      slot0: STONE_SWORD
+      slot1: COBBLESTONE:64
+      slot2: REDSTONE_BLOCK:8
+      slot3: PISTON:8
+      slot4: STICKY_PISTON:4
+      slot5: COOKED_BEEF:6
+    effects:
+      - HASTE:-1:1
+
+  berserker:
+    display-name: "&c&lBERSERKER"
+    icon: NETHERITE_AXE
+    description:
+      - "&7Dégâts massifs"
+      - "&7Rage à faible vie"
+      - "&7Aucune armure"
+    permission: trapparty.kit.berserker
+    items:
+      mainhand: IRON_AXE:1:SHARPNESS=3
+      slot0: GOLDEN_APPLE:1
+      slot1: COOKED_BEEF:8
+    effects:
+      - STRENGTH:-1:0
+      - SPEED:-1:0

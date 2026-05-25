@@ -1,0 +1,98 @@
+# =====================================================
+#                  TrapParty - config.yml
+# =====================================================
+# Toutes les durées sont en secondes sauf indication.
+# Rechargement à chaud : /tpadmin reload
+
+settings:
+  language: fr                # fr / en
+  prefix: "&8[&cTrap&fParty&8]"
+  storage: yaml               # yaml / sqlite (sqlite expérimental)
+  auto-restart: true
+  use-multiverse: true        # auto-détecté si plugin présent
+  debug: false
+
+game:
+  min-players: 2
+  max-players: 12
+  countdown: 20
+  preparation-time: 90        # phase construction & pièges
+  combat-time: 240            # phase PvP avant suddendeath
+  sudden-death-time: 60       # bordure ferme rapidement
+  end-time: 8
+  pvp-grace-period: 5
+  spectator-on-death: true
+  allow-rejoin: true
+  rejoin-window: 60
+  teams:
+    enabled: false
+    size: 2
+
+arena:
+  templates-folder: "templates"
+  active-folder: "active"
+  border:
+    initial-size: 150
+    combat-size: 80
+    sudden-death-size: 25
+    warning-distance: 5
+    damage-per-block: 0.4
+  cleanup:
+    unload-async: true
+    delete-files: true
+    delay-after-end: 10
+
+economy:
+  starting-coins: 50
+  kill-reward: 25
+  trap-kill-bonus: 15
+  win-reward: 150
+  participation: 25
+  daily-streak-bonus: 20
+
+shop:
+  enabled: true
+  free-item-cooldown: 30      # secondes entre items gratuits
+  anti-spam-clicks-per-second: 4
+  categories:
+    - blocks
+    - traps
+    - utility
+    - consumables
+    - redstone
+    - mobility
+
+events:
+  enabled: true
+  min-interval: 60
+  max-interval: 150
+  chance: 0.75
+  pool:
+    - storm
+    - meteor
+    - mutation
+    - loot_chest
+    - speed_boost
+    - low_gravity
+    - night_fall
+
+modifiers-vote:
+  enabled: true
+  vote-time: 15
+  options-per-vote: 3
+
+ranked:
+  enabled: true
+  base-mmr: 1000
+  k-factor: 32
+
+rewards:
+  daily-quests: true
+  win-streak-bonus: true
+
+performance:
+  async-world-ops: true
+  entity-cleanup-interval: 30
+  max-arenas: 16
+  particle-distance: 64
+  sound-distance: 48

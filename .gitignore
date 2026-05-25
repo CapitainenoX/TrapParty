@@ -1,0 +1,13 @@
+target/
+*.class
+*.jar
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+build/
+out/
+.gradle/
+dependency-reduced-pom.xml

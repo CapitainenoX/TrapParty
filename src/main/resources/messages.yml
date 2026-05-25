@@ -1,0 +1,96 @@
+# =============================================================
+#  TrapParty - messages.yml
+#  Tu peux utiliser & pour les couleurs.
+#  Placeholders : {player} {kit} {arena} {time} {amount} {state}
+# =============================================================
+
+prefix: "&8[&cTrap&fParty&8] "
+
+generic:
+  no-permission: "&cTu n'as pas la permission pour faire ça."
+  unknown-command: "&cCommande inconnue. Tape &e/tparty help&c."
+  player-only: "&cCette commande est réservée aux joueurs."
+  reloaded: "&aConfiguration rechargée en &b{time}ms&a."
+  in-game: "&cTu es déjà dans une partie."
+  not-in-game: "&cTu n'es pas dans une partie."
+
+join:
+  success: "&aTu as rejoint l'arène &e{arena}&a."
+  full: "&cL'arène &e{arena}&c est pleine."
+  already-started: "&cLa partie a déjà commencé."
+  broadcast: "&8» &e{player} &7a rejoint la partie. &8({count}/{max})"
+  leave: "&8» &e{player} &7a quitté la partie."
+
+game:
+  countdown: "&eLa partie commence dans &c{time}&e secondes."
+  starting: "&aLa partie commence ! Bonne chance !"
+  prep-start: "&6&l▶ &ePhase de préparation : &c{time}s &epour construire vos pièges !"
+  prep-end: "&c&l⚔ Préparation terminée !"
+  combat-start: "&c&l⚔ PvP ACTIVÉ ! &fSurvivez !"
+  sudden-death: "&4&l☠ MORT SUBITE ! &cLa zone se ferme rapidement !"
+  win: "&6&l✦ &e{player} &6&lremporte la partie !"
+  no-winner: "&7Personne ne survit. La partie est terminée."
+  player-killed: "&8» &e{player} &7a été éliminé par &c{killer}&7."
+  player-trap-killed: "&8» &e{player} &7s'est fait piéger par &c{killer}&7 !"
+  player-died: "&8» &e{player} &7est mort."
+  alive-count: "&7Survivants : &a{count}"
+
+kit:
+  selected: "&aKit sélectionné : &e{kit}&a."
+  locked: "&cCe kit est verrouillé."
+  list-header: "&6&lKits disponibles :"
+  open-gui: "&7Ouvre &e/kit&7 pour choisir."
+
+shop:
+  opened: "&aBoutique ouverte."
+  bought: "&aAchat effectué : &e{item} &a(&6-{amount}&a)."
+  not-enough: "&cPas assez de pièces. (&6{amount}&c requis)"
+  free-cooldown: "&7Patiente &b{time}s &7avant le prochain item gratuit."
+
+trap:
+  placed: "&7Piège &e{trap} &7placé."
+  removed: "&7Piège &e{trap} &7retiré."
+  triggered: "&c&l☢ {victim} &c&la déclenché ton piège &e{trap}&c !"
+
+events:
+  storm: "&3&l⛈ &bUne tempête éclate sur l'arène !"
+  meteor: "&c&l☄ &eDes météorites s'abattent !"
+  mutation: "&5&l✦ &dMutation : &b{mutation} &dsur tout le monde !"
+  loot-chest: "&6&l✦ &eUn coffre mystère apparaît !"
+  speed-boost: "&a&l⚡ Tout le monde gagne de la vitesse !"
+  low-gravity: "&b&l✦ Gravité réduite !"
+  night-fall: "&8&l☾ La nuit tombe brutalement..."
+
+modifiers:
+  vote-start: "&6Votez pour un modificateur ! &7Cliquez dans le chat ou utilisez &e/tparty vote <num>&7."
+  vote-cast: "&aVote enregistré pour &e{modifier}&a."
+  vote-end: "&6Modificateur choisi : &e{modifier}&6 !"
+
+stats:
+  header: "&6&lTes statistiques :"
+  wins: "&7Victoires : &a{wins}"
+  kills: "&7Kills : &c{kills}"
+  trap-kills: "&7Kills via pièges : &e{trap_kills}"
+  games-played: "&7Parties jouées : &b{games}"
+  mmr: "&7MMR : &d{mmr}"
+  kd: "&7K/D : &f{kd}"
+
+admin:
+  arena-created: "&aArène &e{arena} &acréée."
+  arena-deleted: "&aArène &e{arena} &asupprimée."
+  arena-saved: "&aArène &e{arena} &asauvegardée."
+  game-force-start: "&aPartie démarrée de force sur &e{arena}&a."
+  game-force-end: "&aPartie terminée de force sur &e{arena}&a."
+  debug-on: "&aDebug activé."
+  debug-off: "&7Debug désactivé."
+
+scoreboard:
+  title: "&c&lTRAP&f&lPARTY"
+  state: "&7État : &e{state}"
+  time: "&7Temps : &b{time}"
+  players: "&7Joueurs : &a{alive}&7/&f{total}"
+  kit: "&7Kit : &e{kit}"
+  coins: "&7Pièces : &6{coins}"
+  kills: "&7Kills : &c{kills}"
+  arena: "&7Arène : &e{arena}"
+  footer: "&8play.trapparty.fr"

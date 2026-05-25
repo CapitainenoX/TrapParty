@@ -1,0 +1,37 @@
+# =====================================================
+#  TrapParty - arenas.yml
+# =====================================================
+# Définit les arènes templates. Le plugin clone chaque arène
+# dans un monde temporaire pour chaque partie.
+# /tpadmin create <name> -> bootstrap d'une arène vide.
+# Coordonnées : x,y,z[,yaw,pitch]
+
+arenas:
+  example:
+    display-name: "&aExample Arena"
+    template-world: "trap_example"        # nom du monde template (doit exister)
+    min-players: 2
+    max-players: 8
+    center: "0,80,0"
+    spawns:
+      - "10,80,0,180,0"
+      - "-10,80,0,0,0"
+      - "0,80,10,-90,0"
+      - "0,80,-10,90,0"
+      - "10,80,10,225,0"
+      - "-10,80,-10,45,0"
+      - "10,80,-10,135,0"
+      - "-10,80,10,-45,0"
+    spectator-spawn: "0,120,0"
+    border:
+      center: "0,80,0"
+      initial: 150
+      combat: 80
+      sudden-death: 25
+    chest-locations: []                    # locations pour coffres mystères
+    biome: PLAINS
+    rules:
+      block-break: true                    # pendant prep
+      block-place: true
+      pvp-prep: false
+      hunger: true

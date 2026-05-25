@@ -1,0 +1,112 @@
+package fr.trapparty.kit;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.*;
+
+public class Kit {
+
+    private final String id;
+    private final String displayName;
+    private final Material icon;
+    private final List<String> description;
+    private final String permission;
+    private final Map<String, ItemStack> items;     // slot key -> item
+    private final List<EffectDef> effects;
+    private final int extraCoins;
+
+    public Kit(String id, String displayName, Material icon, List<String> description,
+               String permission, Map<String, ItemStack> items, List<EffectDef> effects, int extraCoins) {
+        this.id = id;
+        this.displayName = displayName;
+        this.icon = icon;
+        this.description = description == null ? Collections.emptyList() : description;
+        this.permission = permission;
+        this.items = items;
+        this.effects = effects;
+        this.extraCoins = extraCoins;
+    }
+
+    public void apply(Player p) {
+        ItemStack helmet = items.get("helmet");
+        ItemStack chest = items.get("chestplate");
+        ItemStack legs = items.get("leggings");
+        ItemStack boots = items.get("boots");
+        if (helmet != null) p.getInventory().setHelmet(helmet);
+        if (chest != null) p.getInventory().setChestplate(chest);
+        if (legs != null) p.getInventory().setLeggings(legs);
+        if (boots != null) p.getInventory().setBoots(boots);
+
+        ItemStack main = items.get("mainhand");
+        if (main != null) p.getInventory().setItemInMainHand(main);
+        ItemStack off = items.get("offhand");
+        if (off != null) {
+            try { p.getInventory().setItemInOffHand(off); } catch (Throwable ignored) {}
+        }
+        for (Map.Entry<String, ItemStack> e : items.entrySet()) {
+            if (!e.getKey().startsWith("slot")) continue;
+            int idx;
+            try { idx = Integer.parseInt(e.getKey().substring(4)); } catch (NumberFormatException ex) { continue; }
+            p.getInventory().setItem(idx, e.getValue());
+        }
+        for (EffectDef ed : effects) ed.apply(p);
+    }
+
+    public String getId() { return id; }
+    public String getDisplayName() { return displayName; }
+    public Material getIcon() { return icon; }
+    public List<String> getDescription() { return description; }
+    public String getPermission() { return permission; }
+    public int getExtraCoins() { return extraCoins; }
+
+    public boolean canUse(Player p) {
+        return permission == null || permission.isEmpty() || p.hasPermission(permission);
+    }
+
+    public static class EffectDef {
+        private final PotionEffectType type;
+        private final int durationTicks;
+        private final int amplifier;
+
+        public EffectDef(PotionEffectType type, int durationTicks, int amplifier) {
+            this.type = type;
+            this.durationTicks = durationTicks;
+            this.amplifier = amplifier;
+        }
+
+        public void apply(Player p) {
+            int dur = durationTicks < 0 ? Integer.MAX_VALUE : durationTicks;
+            p.addPotionEffect(new PotionEffect(type, dur, amplifier, true, false));
+        }
+
+        public static EffectDef parse(String def) {
+            // NAME:duration:amplifier
+            String[] parts = def.split(":");
+            if (parts.length < 1) return null;
+            PotionEffectType type = PotionEffectType.getByName(parts[0]);
+            if (type == null) {
+                // alias historiques
+                type = switch (parts[0].toUpperCase()) {
+                    case "DAMAGE_RESISTANCE", "RESISTANCE" -> PotionEffectType.getByName("RESISTANCE");
+                    case "INCREASE_DAMAGE", "STRENGTH" -> PotionEffectType.getByName("STRENGTH");
+                    case "FAST_DIGGING", "HASTE" -> PotionEffectType.getByName("HASTE");
+                    case "SLOW", "SLOWNESS" -> PotionEffectType.getByName("SLOWNESS");
+                    case "JUMP", "JUMP_BOOST" -> PotionEffectType.getByName("JUMP_BOOST");
+                    default -> null;
+                };
+            }
+            if (type == null) return null;
+            int dur = parts.length >= 2 ? safeInt(parts[1], -1) : -1;
+            int amp = parts.length >= 3 ? safeInt(parts[2], 0) : 0;
+            return new EffectDef(type, dur, amp);
+        }
+
+        private static int safeInt(String s, int fb) {
+            try { return Integer.parseInt(s); } catch (NumberFormatException ex) { return fb; }
+        }
+    }
+}
