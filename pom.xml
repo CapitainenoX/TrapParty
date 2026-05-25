@@ -10,12 +10,15 @@
     <packaging>jar</packaging>
 
     <name>TrapParty</name>
-    <description>Premium Trap Survival mini-game for Paper/Spigot/Purpur servers.</description>
+    <description>Premium Trap Survival mini-game for Paper/Spigot/Purpur — targets MC 26.1.2.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <!-- Paper 26.1.2 ships with Java 21 -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <paper.api.version>26.1.2-R0.1-SNAPSHOT</paper.api.version>
+        <multiverse.version>5.6.1</multiverse.version>
     </properties>
 
     <repositories>
@@ -28,10 +31,6 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
             <id>onarandombox</id>
             <url>https://repo.onarandombox.com/content/groups/public/</url>
         </repository>
@@ -42,19 +41,19 @@
     </repositories>
 
     <dependencies>
-        <!-- Paper API (compatible Spigot/Purpur via Bukkit API) -->
+        <!-- Paper API (couvre Spigot/Purpur via Bukkit API) -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>${paper.api.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- MultiVerse-Core (soft-depend) -->
+        <!-- Multiverse-Core 5 (nouveau groupId depuis v5) -->
         <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
+            <groupId>org.mvplugins.multiverse.core</groupId>
             <artifactId>multiverse-core</artifactId>
-            <version>4.3.1</version>
+            <version>${multiverse.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -77,10 +76,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
             <plugin>

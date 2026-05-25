@@ -51,10 +51,21 @@ public class LootChestEvent implements GameEvent {
                     new ItemBuilder(Material.IRON_SWORD)
                             .enchant(ItemBuilder.lookupEnchant("SHARPNESS", "DAMAGE_ALL"), 1).build()
             );
+            // Items modernes (MC 1.21+) si disponibles sur le serveur
+            addIfPresent(inv, "WIND_CHARGE|SNOWBALL", 4);
+            addIfPresent(inv, "MACE|NETHERITE_AXE|IRON_AXE", 1);
+            addIfPresent(inv, "BREEZE_ROD|BLAZE_ROD", 1);
+            addIfPresent(inv, "OMINOUS_BOTTLE", 1);
+            addIfPresent(inv, "GOLDEN_DANDELION", 1);
         }
         plugin.messages().broadcastPlayers(onlinePlayersIn(game), "events.loot-chest", null);
         // particules d'indication
         game.world().strikeLightningEffect(target.clone().add(0, 2, 0));
+    }
+
+    private static void addIfPresent(Inventory inv, String materialDef, int amount) {
+        Material m = ItemBuilder.resolveMaterial(materialDef);
+        if (m != null) inv.addItem(new ItemStack(m, Math.max(1, amount)));
     }
 
     private static java.util.List<Player> onlinePlayersIn(Game g) {

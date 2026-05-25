@@ -49,15 +49,35 @@ public class ItemBuilder {
 
     public ItemBuilder glow() {
         return meta(m -> {
+            // Méthode moderne (Paper 1.20.5+ / 26.x) : setEnchantmentGlintOverride
+            try {
+                java.lang.reflect.Method setGlint = m.getClass().getMethod("setEnchantmentGlintOverride", Boolean.class);
+                setGlint.invoke(m, Boolean.TRUE);
+                return;
+            } catch (Throwable ignored) {}
             Enchantment glow = lookupEnchant("LURE", "UNBREAKING", "DURABILITY");
             if (glow != null) m.addEnchant(glow, 1, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         });
     }
 
-    /** Cross-version enchantment lookup: try modern names, then legacy. */
+    /**
+     * Cross-version enchantment lookup. Tente successivement :
+     *  1. Registry moderne via NamespacedKey (Paper 1.21+ / 26.1+ : Enchantment#getKey)
+     *  2. Enchantment.getByName(String) (legacy, déprécié mais encore présent)
+     *  3. Itération sur Registry.ENCHANTMENT si dispo.
+     */
     public static Enchantment lookupEnchant(String... candidates) {
         for (String name : candidates) {
+            if (name == null || name.isEmpty()) continue;
+            String lower = name.toLowerCase().replace(' ', '_');
+            // 1) Registry moderne (Paper 1.20.5+)
+            try {
+                org.bukkit.NamespacedKey key = org.bukkit.NamespacedKey.minecraft(lower);
+                Enchantment e = org.bukkit.Registry.ENCHANTMENT.get(key);
+                if (e != null) return e;
+            } catch (Throwable ignored) {}
+            // 2) Legacy getByName
             try {
                 @SuppressWarnings("deprecation")
                 Enchantment e = Enchantment.getByName(name);
@@ -81,8 +101,25 @@ public class ItemBuilder {
             java.util.Map.entry("FEATHER_FALLING", new String[]{"FEATHER_FALLING", "PROTECTION_FALL"}),
             java.util.Map.entry("FIRE_PROTECTION", new String[]{"FIRE_PROTECTION", "PROTECTION_FIRE"}),
             java.util.Map.entry("BLAST_PROTECTION", new String[]{"BLAST_PROTECTION", "PROTECTION_EXPLOSIONS"}),
-            java.util.Map.entry("PROJECTILE_PROTECTION", new String[]{"PROJECTILE_PROTECTION", "PROTECTION_PROJECTILE"})
+            java.util.Map.entry("PROJECTILE_PROTECTION", new String[]{"PROJECTILE_PROTECTION", "PROTECTION_PROJECTILE"}),
+            // Mace enchantments (MC 1.21+)
+            java.util.Map.entry("DENSITY", new String[]{"DENSITY"}),
+            java.util.Map.entry("BREACH", new String[]{"BREACH"}),
+            java.util.Map.entry("WIND_BURST", new String[]{"WIND_BURST"})
     );
+
+    /**
+     * Résout une Material avec fallback : "MACE|IRON_SWORD|STICK".
+     * Tente chaque candidat dans l'ordre, retourne le premier disponible.
+     */
+    public static Material resolveMaterial(String def) {
+        if (def == null || def.isEmpty()) return null;
+        for (String candidate : def.split("\\|")) {
+            Material m = Material.matchMaterial(candidate.trim());
+            if (m != null) return m;
+        }
+        return null;
+    }
 
     public ItemBuilder hideAll() {
         return meta(m -> m.addItemFlags(ItemFlag.values()));
@@ -106,7 +143,8 @@ public class ItemBuilder {
     public static ItemStack fromString(String def) {
         if (def == null || def.isEmpty()) return null;
         String[] parts = def.split(":");
-        Material mat = Material.matchMaterial(parts[0]);
+        // 1er segment : material avec fallbacks via "|"
+        Material mat = resolveMaterial(parts[0]);
         if (mat == null) return null;
         int amount = 1;
         if (parts.length >= 2) {

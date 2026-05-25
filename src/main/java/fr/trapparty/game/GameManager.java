@@ -50,12 +50,12 @@ public class GameManager {
                 gamesById.remove(id);
                 return;
             }
-            // tweaks de monde
+            // tweaks de monde (API moderne GameRule + fallback string)
             world.setSpawnFlags(false, false);
-            world.setGameRuleValue("doDaylightCycle", "false");
-            world.setGameRuleValue("doMobSpawning", "false");
-            world.setGameRuleValue("doWeatherCycle", "false");
-            world.setGameRuleValue("announceAdvancements", "false");
+            applyRule(world, "doDaylightCycle", false);
+            applyRule(world, "doMobSpawning", false);
+            applyRule(world, "doWeatherCycle", false);
+            applyRule(world, "announceAdvancements", false);
             world.setTime(6000);
             game.setWorld(world);
         });
@@ -120,5 +120,15 @@ public class GameManager {
         for (Game g : new ArrayList<>(gamesById.values())) {
             g.forceEnd();
         }
+    }
+
+    @SuppressWarnings({"unchecked", "deprecation"})
+    private static void applyRule(org.bukkit.World world, String name, boolean value) {
+        try {
+            org.bukkit.GameRule<Boolean> rule = (org.bukkit.GameRule<Boolean>) org.bukkit.GameRule.getByName(name);
+            if (rule != null) { world.setGameRule(rule, value); return; }
+        } catch (Throwable ignored) {}
+        // fallback API legacy
+        try { world.setGameRuleValue(name, String.valueOf(value)); } catch (Throwable ignored) {}
     }
 }

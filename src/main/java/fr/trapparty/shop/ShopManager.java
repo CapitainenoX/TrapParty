@@ -40,13 +40,16 @@ public class ShopManager {
             ConfigurationSection s = root.getConfigurationSection(id);
             if (s == null) continue;
             String display = s.getString("display", id);
-            Material icon = Material.matchMaterial(s.getString("icon", "CHEST"));
+            Material icon = fr.trapparty.util.ItemBuilder.resolveMaterial(s.getString("icon", "CHEST"));
             if (icon == null) icon = Material.CHEST;
             int slot = s.getInt("slot", 10);
             List<ShopItem> items = new ArrayList<>();
             for (Map<?, ?> raw : s.getMapList("items")) {
-                Material mat = Material.matchMaterial(String.valueOf(raw.get("material")));
-                if (mat == null) continue;
+                Material mat = fr.trapparty.util.ItemBuilder.resolveMaterial(String.valueOf(raw.get("material")));
+                if (mat == null) {
+                    plugin.getLogger().fine("Shop: skip item, material not found: " + raw.get("material"));
+                    continue;
+                }
                 int amt = raw.get("amount") instanceof Number n ? n.intValue() : 1;
                 int cost = raw.get("cost") instanceof Number n2 ? n2.intValue() : 0;
                 boolean free = raw.get("free") instanceof Boolean b && b;

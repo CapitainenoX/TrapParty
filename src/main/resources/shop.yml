@@ -3,7 +3,10 @@
 # =====================================================
 # free: true  -> item gratuit (cooldown global free-item-cooldown)
 # cost: X     -> coût en pièces
-# Categories : blocks, traps, utility, consumables, redstone, mobility
+# material : nom Bukkit, supporte le fallback "A|B|C" (premier dispo gagne)
+# potion : type de potion (HEALING, SWIFTNESS, …) si material=POTION
+#
+# Cible MC 26.1.2 (Tiny Takeover), avec fallback pour versions antérieures.
 
 categories:
   blocks:
@@ -15,8 +18,12 @@ categories:
       - { material: COBBLESTONE, amount: 64, cost: 15 }
       - { material: OAK_PLANKS, amount: 32, cost: 10 }
       - { material: OBSIDIAN, amount: 4, cost: 35 }
+      - { material: "TUFF|COBBLESTONE", amount: 32, cost: 12 }
+      - { material: "POLISHED_TUFF|COBBLESTONE", amount: 16, cost: 16 }
       - { material: GLASS, amount: 16, cost: 8 }
       - { material: SLIME_BLOCK, amount: 4, cost: 12 }
+      - { material: "HONEY_BLOCK|SLIME_BLOCK", amount: 4, cost: 14 }
+      - { material: "RESIN_BLOCK|TERRACOTTA", amount: 8, cost: 18 }
 
   traps:
     display: "&c&lPièges"
@@ -31,6 +38,9 @@ categories:
       - { material: MAGMA_BLOCK, amount: 4, cost: 12 }
       - { material: SOUL_SAND, amount: 4, cost: 8 }
       - { material: CACTUS, amount: 4, cost: 6 }
+      - { material: "POINTED_DRIPSTONE|CACTUS", amount: 4, cost: 10 }
+      - { material: "WIND_CHARGE|FIRE_CHARGE", amount: 4, cost: 18 }
+      - { material: "CREAKING_HEART|REDSTONE_BLOCK", amount: 1, cost: 40 }
 
   utility:
     display: "&b&lUtilitaires"
@@ -39,10 +49,14 @@ categories:
     items:
       - { material: SHIELD, cost: 20 }
       - { material: BOW, cost: 25 }
+      - { material: "CROSSBOW|BOW", cost: 28 }
       - { material: ARROW, amount: 8, cost: 8 }
       - { material: FISHING_ROD, cost: 18 }
       - { material: FLINT_AND_STEEL, cost: 10 }
       - { material: WATER_BUCKET, cost: 15 }
+      - { material: "BUNDLE|CHEST", cost: 12 }
+      - { material: "BREEZE_ROD|BLAZE_ROD", cost: 30 }
+      - { material: "MACE|NETHERITE_AXE", cost: 75 }
 
   consumables:
     display: "&a&lConsommables"
@@ -51,8 +65,13 @@ categories:
     items:
       - { material: COOKED_BEEF, amount: 4, cost: 0, free: true }
       - { material: GOLDEN_APPLE, cost: 30 }
+      - { material: "ENCHANTED_GOLDEN_APPLE|GOLDEN_APPLE", cost: 80 }
       - { material: MILK_BUCKET, cost: 15 }
       - { material: POTION, cost: 25, potion: HEALING }
+      - { material: POTION, cost: 25, potion: SWIFTNESS }
+      - { material: POTION, cost: 30, potion: STRENGTH }
+      - { material: "OMINOUS_BOTTLE|GLASS_BOTTLE", cost: 35 }
+      - { material: "GOLDEN_DANDELION|GOLDEN_CARROT", cost: 22 }
 
   redstone:
     display: "&4&lRedstone"
@@ -65,6 +84,8 @@ categories:
       - { material: PISTON, amount: 2, cost: 12 }
       - { material: STICKY_PISTON, cost: 10 }
       - { material: OBSERVER, amount: 2, cost: 15 }
+      - { material: "COPPER_BULB|REDSTONE_LAMP", amount: 4, cost: 14 }
+      - { material: "CRAFTER|DISPENSER", cost: 20 }
 
   mobility:
     display: "&e&lMobilité"
@@ -75,3 +96,6 @@ categories:
       - { material: FEATHER, cost: 5 }
       - { material: SLIME_BLOCK, amount: 2, cost: 6 }
       - { material: SCAFFOLDING, amount: 8, cost: 10 }
+      - { material: "WIND_CHARGE|SNOWBALL", amount: 8, cost: 14 }
+      - { material: "BREEZE_ROD|BLAZE_ROD", cost: 30 }
+      - { material: "HEAVY_CORE|ANVIL", cost: 35 }

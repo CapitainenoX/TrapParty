@@ -9,13 +9,13 @@ ses pièges puis tente de survivre au PvP dans une mini-arène à bordure rétr�
 
 - Plusieurs parties **simultanées**, chacune sur son monde clone.
 - Cycle de partie complet : `WAITING → STARTING → PREPARATION → COMBAT → SUDDEN_DEATH → ENDING → RESETTING`.
-- **6 kits** équilibrés (Tank, Archer, Assassin, TrapMaster, Engineer, Berserker), entièrement configurables.
-- Shop en jeu, catégories (blocs, pièges, utilitaires, redstone, mobilité, consommables), anti-spam et items gratuits.
-- Pièges : TNT, toiles, lave, magma, tripwire, cactus… kills attribués à l'owner.
-- Événements aléatoires : tempête, météorites, mutations, coffres mystères, speed boost, faible gravité, nuit.
-- UI moderne : scoreboard dynamique, boss bar, titres, sons, hologrammes natifs.
-- Compatible Paper / Spigot / Purpur, **api-version 1.13** → fonctionne jusqu'à 1.21+.
-- Intégration **soft** avec MultiVerse-Core (auto-détectée).
+- **8 kits** équilibrés (Tank, Archer, Assassin, TrapMaster, Engineer, Berserker, **Macer**, **Breezer**), entièrement configurables.
+- Shop en jeu avec items 1.21+ (mace, wind charge, ominous bottle, golden dandelion, copper bulb, tuff, bundles, breeze rod, heavy core…), anti-spam, items gratuits.
+- Pièges : TNT, toiles, lave, magma, tripwire, cactus, pointed dripstone… kills attribués à l'owner.
+- Événements aléatoires : tempête, météorites, mutations, coffres mystères (loot 1.21+ inclus), speed boost, faible gravité, nuit.
+- UI moderne : scoreboard, boss bar, titres, sons, hologrammes natifs ArmorStand.
+- **Cible : Minecraft 26.1.2 (Tiny Takeover)** — fonctionne aussi sur les versions plus anciennes grâce au système de fallback YAML.
+- Intégration **soft** avec MultiVerse-Core v4 **et** v5 (auto-détection du package).
 - Stats persistantes (YAML), MMR simple, hooks pour SQLite/MySQL futurs.
 - 0 dépendance lourde — hologrammes via ArmorStand natifs.
 
@@ -29,9 +29,9 @@ Le plugin compilé sera dans `target/TrapParty-1.0.0.jar`.
 
 ### Dépendances de build
 
-- Java 17+
-- Paper API 1.20.4 (sur le repo `repo.papermc.io`)
-- MultiVerse-Core 4.3.1 *(scope provided, optionnel à l'exécution)*
+- **Java 21** (requis par Paper 26.1.x)
+- **Paper API 26.1.2-R0.1-SNAPSHOT** (depuis `repo.papermc.io`)
+- **Multiverse-Core 5.6.1** *(scope provided, optionnel à l'exécution)* — groupId v5 `org.mvplugins.multiverse.core`, repo `repo.onarandombox.com`
 
 > Ces dépôts ne sont pas sur Maven Central : un accès réseau aux dépôts
 > `repo.papermc.io` et `repo.onarandombox.com` est requis au build.
@@ -101,18 +101,36 @@ fr.trapparty/
 
 ## Compatibilité multi-version
 
-Le plugin cible **api-version 1.13** dans `plugin.yml` mais reste fonctionnel
-jusqu'aux dernières versions (1.21+) grâce à :
+Cible principale : **MC 26.1.2** (api-version `26.1` dans `plugin.yml`).
+Le code reste tolérant aux versions antérieures (1.20 → 1.21.x) grâce à :
 
-- `VersionAdapter` qui détecte la version serveur et expose des helpers
-  (titres, action bars, sons, particules, matériaux, couleurs cuir) avec
-  fallbacks réfléchis.
-- `ItemBuilder.lookupEnchant(...)` qui résout les enchantements par alias
-  ancien/nouveau (`SHARPNESS` ⇆ `DAMAGE_ALL`, `POWER` ⇆ `ARROW_DAMAGE`, …).
-- Aucune dépendance NMS directe.
-- Les enchantements et matériaux sont résolus par nom (string) avec
-  multiples candidats.
-- Pas de dépendance dure sur Paper / Adventure — détection via classpath.
+- `VersionAdapter` qui parse le nouveau (`26.1.2`) et l'ancien (`1.20.x`)
+  schéma de numérotation, et expose des helpers cross-version (titres,
+  action bars Spigot chat API, sons, particules, couleurs cuir).
+- `ItemBuilder.resolveMaterial("MACE|IRON_SWORD|STICK")` — syntaxe pipe
+  pour fournir des fallbacks. Le premier matériau disponible sur le serveur
+  est utilisé ; idéal pour shipper la même `kits.yml` sur tous les serveurs.
+- `ItemBuilder.lookupEnchant(...)` — Registry moderne (`NamespacedKey`)
+  puis `getByName` legacy, plus une table d'alias (`SHARPNESS` ⇆ `DAMAGE_ALL`,
+  `POWER` ⇆ `ARROW_DAMAGE`…) qui couvre les renommages 1.20.5+.
+- `EffectUtil.byName(...)` — même principe pour les `PotionEffectType`
+  (`JUMP_BOOST` ⇆ `JUMP`, `STRENGTH` ⇆ `INCREASE_DAMAGE`…).
+- `Game#maxHealthOf` utilise `Attribute.MAX_HEALTH` (26.1+) puis
+  `GENERIC_MAX_HEALTH` (1.20.x) puis `Damageable#getMaxHealth` legacy.
+- `GameManager#applyRule` utilise `GameRule.getByName` moderne avec
+  fallback sur l'API string dépréciée.
+- `MultiverseHook` détecte v4 (`com.onarandombox`) **ou** v5
+  (`org.mvplugins`) par package et adapte ses appels par reflection.
+- Aucune dépendance NMS directe ; pas de dépendance dure sur Adventure.
+
+### Items et enchantements MC 1.21+ intégrés
+
+| Catégorie | Exemples |
+|-----------|----------|
+| Items | `MACE`, `WIND_CHARGE`, `BREEZE_ROD`, `HEAVY_CORE`, `TRIAL_KEY`, `OMINOUS_BOTTLE`, `CRAFTER`, `COPPER_BULB`, `TUFF`, `POLISHED_TUFF`, `RESIN_BLOCK`, `CREAKING_HEART`, `BUNDLE`, `POINTED_DRIPSTONE` |
+| Items 26.1 | `GOLDEN_DANDELION` |
+| Enchants mace | `DENSITY`, `BREACH`, `WIND_BURST` |
+| Nouveaux kits | `macer` (mace + density/breach/wind_burst), `breezer` (breeze rod, wind charges illimitées) |
 
 ## Performances
 

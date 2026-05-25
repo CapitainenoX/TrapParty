@@ -381,7 +381,7 @@ public class Game {
         p.getInventory().setArmorContents(null);
         p.setLevel(0);
         p.setExp(0);
-        p.setHealth(p.getMaxHealth());
+        p.setHealth(maxHealthOf(p));
         p.setFoodLevel(20);
         p.setSaturation(20f);
         p.setFireTicks(0);
@@ -415,4 +415,20 @@ public class Game {
     private void broadcastPrefixed(String key, Map<String, String> ph) { broadcast(key, ph); }
 
     public long uptimeMillis() { return System.currentTimeMillis() - createdAt; }
+
+    /** Max-health cross-version : Attribute moderne, fallback Damageable#getMaxHealth (déprécié). */
+    @SuppressWarnings("deprecation")
+    private static double maxHealthOf(Player p) {
+        try {
+            org.bukkit.attribute.Attribute attr = org.bukkit.attribute.Attribute.valueOf("MAX_HEALTH");
+            var inst = p.getAttribute(attr);
+            if (inst != null) return inst.getValue();
+        } catch (Throwable ignored) {}
+        try {
+            org.bukkit.attribute.Attribute attr = org.bukkit.attribute.Attribute.valueOf("GENERIC_MAX_HEALTH");
+            var inst = p.getAttribute(attr);
+            if (inst != null) return inst.getValue();
+        } catch (Throwable ignored) {}
+        try { return p.getMaxHealth(); } catch (Throwable t) { return 20.0; }
+    }
 }

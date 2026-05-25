@@ -87,22 +87,45 @@ public class Kit {
             // NAME:duration:amplifier
             String[] parts = def.split(":");
             if (parts.length < 1) return null;
-            PotionEffectType type = PotionEffectType.getByName(parts[0]);
+            PotionEffectType type = lookupEffect(parts[0]);
             if (type == null) {
-                // alias historiques
-                type = switch (parts[0].toUpperCase()) {
-                    case "DAMAGE_RESISTANCE", "RESISTANCE" -> PotionEffectType.getByName("RESISTANCE");
-                    case "INCREASE_DAMAGE", "STRENGTH" -> PotionEffectType.getByName("STRENGTH");
-                    case "FAST_DIGGING", "HASTE" -> PotionEffectType.getByName("HASTE");
-                    case "SLOW", "SLOWNESS" -> PotionEffectType.getByName("SLOWNESS");
-                    case "JUMP", "JUMP_BOOST" -> PotionEffectType.getByName("JUMP_BOOST");
+                // alias historiques (anciens noms 1.13-1.20 → noms modernes 1.20.5+)
+                String alias = switch (parts[0].toUpperCase()) {
+                    case "DAMAGE_RESISTANCE" -> "RESISTANCE";
+                    case "INCREASE_DAMAGE" -> "STRENGTH";
+                    case "FAST_DIGGING" -> "HASTE";
+                    case "SLOW" -> "SLOWNESS";
+                    case "SLOW_DIGGING" -> "MINING_FATIGUE";
+                    case "JUMP" -> "JUMP_BOOST";
+                    case "HARM" -> "INSTANT_DAMAGE";
+                    case "HEAL" -> "INSTANT_HEALTH";
+                    case "CONFUSION" -> "NAUSEA";
                     default -> null;
                 };
+                if (alias != null) type = lookupEffect(alias);
             }
             if (type == null) return null;
             int dur = parts.length >= 2 ? safeInt(parts[1], -1) : -1;
             int amp = parts.length >= 3 ? safeInt(parts[2], 0) : 0;
             return new EffectDef(type, dur, amp);
+        }
+
+        private static PotionEffectType lookupEffect(String name) {
+            if (name == null) return null;
+            String upper = name.toUpperCase();
+            // Registry moderne
+            try {
+                org.bukkit.NamespacedKey key = org.bukkit.NamespacedKey.minecraft(upper.toLowerCase());
+                PotionEffectType t = org.bukkit.Registry.EFFECT.get(key);
+                if (t != null) return t;
+            } catch (Throwable ignored) {}
+            // Legacy
+            try {
+                @SuppressWarnings("deprecation")
+                PotionEffectType t = PotionEffectType.getByName(upper);
+                if (t != null) return t;
+            } catch (Throwable ignored) {}
+            return null;
         }
 
         private static int safeInt(String s, int fb) {

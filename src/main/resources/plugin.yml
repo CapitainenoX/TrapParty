@@ -1,9 +1,9 @@
 name: TrapParty
 version: ${project.version}
 main: fr.trapparty.TrapPartyPlugin
-api-version: '1.13'
+api-version: '26.1'
 authors: [CapitainenoX]
-description: Premium Trap Survival mini-game with traps, kits, and dynamic arenas.
+description: Premium Trap Survival mini-game — targets MC 26.1.2 (Tiny Takeover).
 website: https://github.com/CapitainenoX/TrapParty
 softdepend: [Multiverse-Core, PlaceholderAPI]
 
@@ -58,6 +58,10 @@ permissions:
   trapparty.kit.engineer:
     default: true
   trapparty.kit.berserker:
+    default: true
+  trapparty.kit.macer:
+    default: true
+  trapparty.kit.breezer:
     default: true
   trapparty.admin:
     description: Admin access.

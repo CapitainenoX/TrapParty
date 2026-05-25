@@ -78,8 +78,17 @@ public final class VersionAdapter {
         return patch >= targetPatch;
     }
 
+    /**
+     * Le nouveau schéma de versionnage MC (annoncé fin 2025) est "année.drop.hotfix"
+     * — par exemple 26.1.2 = année 2026, drop 1, hotfix 2. L'ancien était "1.minor.patch".
+     */
+    public boolean hasModernNumbering() { return major >= 25; }
+
     public String describe() {
-        return (paper ? "Paper" : "Spigot/Bukkit") + " 1." + minor + "." + patch
+        String mcVersion = hasModernNumbering()
+                ? (major + "." + minor + "." + patch)
+                : ("1." + minor + "." + patch);
+        return (paper ? "Paper" : "Spigot/Bukkit") + " " + mcVersion
                 + (adventure ? " +Adventure" : "");
     }
 

@@ -15,7 +15,7 @@ public class LowGravityEvent implements GameEvent {
 
     @Override public void apply(Game game) {
         TrapPartyPlugin plugin = TrapPartyPlugin.get();
-        PotionEffectType jump = PotionEffectType.getByName("JUMP_BOOST");
+        PotionEffectType jump = fr.trapparty.util.EffectUtil.byName("JUMP_BOOST", "JUMP");
         if (jump == null) return;
         for (GamePlayer gp : game.getPlayers()) {
             Player p = Bukkit.getPlayer(gp.getUuid());

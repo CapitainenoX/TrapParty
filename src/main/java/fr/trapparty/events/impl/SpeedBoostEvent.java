@@ -15,7 +15,7 @@ public class SpeedBoostEvent implements GameEvent {
 
     @Override public void apply(Game game) {
         TrapPartyPlugin plugin = TrapPartyPlugin.get();
-        PotionEffectType speed = PotionEffectType.getByName("SPEED");
+        PotionEffectType speed = fr.trapparty.util.EffectUtil.byName("SPEED");
         if (speed == null) return;
         for (GamePlayer gp : game.getPlayers()) {
             Player p = Bukkit.getPlayer(gp.getUuid());

@@ -21,7 +21,7 @@ public class MutationEvent implements GameEvent {
         TrapPartyPlugin plugin = TrapPartyPlugin.get();
         List<String> options = List.of("SPEED", "JUMP_BOOST", "STRENGTH", "INVISIBILITY", "REGENERATION");
         String name = RandomUtil.pick(options);
-        PotionEffectType type = PotionEffectType.getByName(name);
+        PotionEffectType type = fr.trapparty.util.EffectUtil.byName(name, "JUMP", "INCREASE_DAMAGE");
         if (type == null) return;
         for (GamePlayer gp : game.getPlayers()) {
             Player p = Bukkit.getPlayer(gp.getUuid());

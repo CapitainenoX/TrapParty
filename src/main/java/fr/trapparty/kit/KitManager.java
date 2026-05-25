@@ -44,7 +44,7 @@ public class KitManager {
 
     private Kit parse(String id, ConfigurationSection s) {
         String display = s.getString("display-name", id);
-        Material icon = Material.matchMaterial(s.getString("icon", "PAPER"));
+        Material icon = fr.trapparty.util.ItemBuilder.resolveMaterial(s.getString("icon", "PAPER"));
         if (icon == null) icon = Material.PAPER;
         List<String> desc = s.getStringList("description");
         String perm = s.getString("permission", "");

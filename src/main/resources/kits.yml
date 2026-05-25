@@ -1,25 +1,36 @@
 # =====================================================
 #  TrapParty - kits.yml
 # =====================================================
-# Format des items : MATERIAL[:amount][:enchant=level,...]
-# Effets : POTION_EFFECT:duration_ticks:amplifier (duration=-1 pour partie complète)
-# duration=-1 signifie permanent (durée partie).
+# Cible MC 26.1.2 (Tiny Takeover) — fonctionne aussi sur les versions
+# antérieures grâce au système de fallback "MATERIAL|FALLBACK".
+#
+# Syntaxe item : MATERIAL[|FALLBACK1|FALLBACK2][:amount][:ENCHANT=lvl,...]
+# Exemple : "MACE|IRON_SWORD:1:SHARPNESS=2"
+#   => essaie MACE (1.21+), sinon IRON_SWORD ; quantité 1 ; SHARPNESS II
+#
+# Enchantements supportés (anciens + nouveaux) :
+#  SHARPNESS, POWER, INFINITY, PUNCH, FLAME, PROTECTION, EFFICIENCY,
+#  UNBREAKING, FORTUNE, LOOTING, FEATHER_FALLING, FIRE_PROTECTION,
+#  BLAST_PROTECTION, PROJECTILE_PROTECTION,
+#  DENSITY, BREACH, WIND_BURST   <-- mace, MC 1.21+
+#
+# Effets : POTION_EFFECT:duration_ticks:amplifier (duration=-1 = partie complète)
 
 kits:
   tank:
     display-name: "&7&lTANK"
-    icon: IRON_CHESTPLATE
+    icon: "NETHERITE_CHESTPLATE|DIAMOND_CHESTPLATE|IRON_CHESTPLATE"
     description:
-      - "&7Résistant aux dégâts"
+      - "&7Très résistant"
       - "&7Armure renforcée"
       - "&7Lent mais robuste"
     permission: trapparty.kit.tank
     items:
-      helmet: IRON_HELMET
-      chestplate: IRON_CHESTPLATE
-      leggings: IRON_LEGGINGS
-      boots: IRON_BOOTS
-      mainhand: IRON_SWORD
+      helmet: "IRON_HELMET:1:PROTECTION=2"
+      chestplate: "IRON_CHESTPLATE:1:PROTECTION=2"
+      leggings: "IRON_LEGGINGS:1:PROTECTION=2"
+      boots: "IRON_BOOTS:1:FEATHER_FALLING=2"
+      mainhand: "IRON_SWORD:1:SHARPNESS=1"
       offhand: SHIELD
       slot0: COOKED_BEEF:8
       slot1: COBBLESTONE:32
@@ -40,9 +51,9 @@ kits:
       chestplate: LEATHER_CHESTPLATE
       leggings: LEATHER_LEGGINGS
       boots: LEATHER_BOOTS
-      mainhand: BOW:1:POWER=2,INFINITY=1
-      offhand: ARROW:1
-      slot0: STONE_SWORD
+      mainhand: "BOW:1:POWER=2,INFINITY=1"
+      offhand: "ARROW:1"
+      slot0: "STONE_SWORD"
       slot1: COOKED_BEEF:6
       slot2: ARROW:1
     effects:
@@ -50,9 +61,9 @@ kits:
 
   assassin:
     display-name: "&5&lASSASSIN"
-    icon: IRON_SWORD
+    icon: "NETHERITE_SWORD|DIAMOND_SWORD|IRON_SWORD"
     description:
-      - "&7Rapide et invisible"
+      - "&7Rapide et furtif"
       - "&7Dégâts critiques sur surprise"
       - "&7Très fragile"
     permission: trapparty.kit.assassin
@@ -60,10 +71,11 @@ kits:
       helmet: LEATHER_HELMET
       chestplate: LEATHER_CHESTPLATE
       leggings: LEATHER_LEGGINGS
-      boots: LEATHER_BOOTS
-      mainhand: IRON_SWORD:1:SHARPNESS=2
-      slot0: GOLDEN_APPLE:2
+      boots: "LEATHER_BOOTS:1:FEATHER_FALLING=3"
+      mainhand: "IRON_SWORD:1:SHARPNESS=2"
+      slot0: "ENCHANTED_GOLDEN_APPLE|GOLDEN_APPLE:2"
       slot1: ENDER_PEARL:2
+      slot2: "WIND_CHARGE|SNOWBALL:4"
     effects:
       - SPEED:-1:1
 
@@ -72,7 +84,6 @@ kits:
     icon: TRIPWIRE_HOOK
     description:
       - "&7Spécialiste des pièges"
-      - "&7Coûts de pièges réduits"
       - "&7Inventaire de départ rempli"
     permission: trapparty.kit.trapmaster
     items:
@@ -82,49 +93,98 @@ kits:
       boots: CHAINMAIL_BOOTS
       mainhand: STONE_SWORD
       slot0: TNT:8
-      slot1: COBWEB:8
+      slot1: "COBWEB:8"
       slot2: TRIPWIRE_HOOK:8
       slot3: STRING:16
       slot4: REDSTONE:32
       slot5: LAVA_BUCKET:2
       slot6: COOKED_BEEF:6
+      slot7: "WIND_CHARGE|FIRE_CHARGE:4"
     extra-coins: 25
 
   engineer:
     display-name: "&b&lENGINEER"
-    icon: REDSTONE
+    icon: "CRAFTER|REDSTONE_BLOCK|REDSTONE"
     description:
       - "&7Maître de la redstone"
       - "&7Construction rapide"
       - "&7Outils renforcés"
     permission: trapparty.kit.engineer
     items:
-      helmet: CHAINMAIL_HELMET
-      chestplate: IRON_CHESTPLATE
+      helmet: "COPPER_HELMET|CHAINMAIL_HELMET"
+      chestplate: "IRON_CHESTPLATE"
       leggings: CHAINMAIL_LEGGINGS
       boots: CHAINMAIL_BOOTS
-      mainhand: IRON_PICKAXE:1:EFFICIENCY=3
+      mainhand: "IRON_PICKAXE:1:EFFICIENCY=3"
       slot0: STONE_SWORD
       slot1: COBBLESTONE:64
       slot2: REDSTONE_BLOCK:8
       slot3: PISTON:8
       slot4: STICKY_PISTON:4
-      slot5: COOKED_BEEF:6
+      slot5: "OBSERVER|REDSTONE_TORCH:4"
+      slot6: "CRAFTER|CRAFTING_TABLE:2"
+      slot7: COOKED_BEEF:6
     effects:
       - HASTE:-1:1
 
   berserker:
     display-name: "&c&lBERSERKER"
-    icon: NETHERITE_AXE
+    icon: "NETHERITE_AXE|DIAMOND_AXE|IRON_AXE"
     description:
       - "&7Dégâts massifs"
-      - "&7Rage à faible vie"
+      - "&7Force permanente"
       - "&7Aucune armure"
     permission: trapparty.kit.berserker
     items:
-      mainhand: IRON_AXE:1:SHARPNESS=3
-      slot0: GOLDEN_APPLE:1
+      mainhand: "IRON_AXE:1:SHARPNESS=3"
+      slot0: "GOLDEN_APPLE:1"
       slot1: COOKED_BEEF:8
+      slot2: "WIND_CHARGE|SNOWBALL:6"
     effects:
       - STRENGTH:-1:0
+      - SPEED:-1:0
+
+  # ---- Kits MC 1.21+ : utilisent les nouveaux items ----
+
+  macer:
+    display-name: "&d&lMACER"
+    icon: "MACE|NETHERITE_AXE|IRON_AXE"
+    description:
+      - "&7Maître de la mace"
+      - "&7Dégâts massifs en chute"
+      - "&7Wind Burst pour relancer un smash"
+      - "&8(fallback : axe enchantée)"
+    permission: trapparty.kit.macer
+    items:
+      helmet: "IRON_HELMET"
+      chestplate: "IRON_CHESTPLATE"
+      leggings: "IRON_LEGGINGS"
+      boots: "IRON_BOOTS:1:FEATHER_FALLING=4"
+      mainhand: "MACE|NETHERITE_AXE|IRON_AXE:1:DENSITY=3,BREACH=2,WIND_BURST=1,SHARPNESS=2"
+      slot0: "WIND_CHARGE|SNOWBALL:8"
+      slot1: "ENCHANTED_GOLDEN_APPLE|GOLDEN_APPLE:1"
+      slot2: COOKED_BEEF:6
+    effects:
+      - JUMP_BOOST:-1:1
+
+  breezer:
+    display-name: "&3&lBREEZER"
+    icon: "BREEZE_ROD|BLAZE_ROD|STICK"
+    description:
+      - "&7Combat aérien"
+      - "&7Wind Charges illimitées"
+      - "&7Saut amélioré"
+    permission: trapparty.kit.breezer
+    items:
+      helmet: "CHAINMAIL_HELMET"
+      chestplate: "LEATHER_CHESTPLATE"
+      leggings: "LEATHER_LEGGINGS"
+      boots: "LEATHER_BOOTS:1:FEATHER_FALLING=4"
+      mainhand: "BREEZE_ROD|BLAZE_ROD|STICK"
+      slot0: "WIND_CHARGE|SNOWBALL:16"
+      slot1: "WIND_CHARGE|SNOWBALL:16"
+      slot2: "STONE_SWORD"
+      slot3: COOKED_BEEF:6
+    effects:
+      - JUMP_BOOST:-1:2
       - SPEED:-1:0
