@@ -17,7 +17,13 @@
         <!-- Paper 26.1.2 ships with Java 21 -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <paper.api.version>26.1.2-R0.1-SNAPSHOT</paper.api.version>
+        <!--
+          Paper 26.1+ a abandonné le format `-R0.1-SNAPSHOT`. On cible un
+          build stable précis pour la reproductibilité ; remplace par
+          [26.1.2.build,) pour prendre toujours le dernier build dispo.
+          Doc : https://docs.papermc.io/paper/dev/project-setup/
+        -->
+        <paper.api.version>[26.1.2.build,)</paper.api.version>
         <multiverse.version>5.6.1</multiverse.version>
     </properties>
 

@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 STUB="stubs/bukkit-stub-26.1.2.jar"
 [ -f "$STUB" ] || { echo "Stubs missing. Run: python3 stubs/gen.py && javac --release 21 -d stubs/out \$(find stubs/src -name '*.java') && (cd stubs/out && jar cf ../bukkit-stub-26.1.2.jar .)"; exit 1; }
 
-for art in "io.papermc.paper:paper-api:26.1.2-R0.1-SNAPSHOT" \
+for art in "io.papermc.paper:paper-api:26.1.2.build.65-stable" \
            "org.mvplugins.multiverse.core:multiverse-core:5.6.1" \
            "com.github.MilkBowl:VaultAPI:1.7" \
            "me.clip:placeholderapi:2.11.6"; do
