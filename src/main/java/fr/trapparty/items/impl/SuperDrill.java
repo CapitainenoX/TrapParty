@@ -25,31 +25,41 @@ public class SuperDrill implements SpecialItem {
                 "&7Récupère les blocs cassés.");
     }
     @Override public String baseMaterial() { return "NETHERITE_PICKAXE|DIAMOND_PICKAXE|IRON_PICKAXE"; }
-    @Override public int maxUses() { return 6; }
-    @Override public int cost() { return 60; }
+    @Override public int maxUses() { return 4; }
+    @Override public int cost() { return 70; }
     @Override public String shopCategory() { return "utility"; }
+
+    private static final java.util.Map<java.util.UUID, Long> lastUse = new java.util.concurrent.ConcurrentHashMap<>();
 
     @Override
     public boolean onUse(Player p, PlayerInteractEvent e) {
         TrapPartyPlugin plugin = TrapPartyPlugin.get();
-        // Respect des règles de l'arène : pas de break en prep si interdit
         var game = plugin.games().forPlayer(p);
         if (game == null) return false;
         if (game.getState() == fr.trapparty.game.GameState.PREPARATION
                 && !game.getArena().isBlockBreakAllowedInPrep()) {
-            plugin.messages().send(p, "trap.placed",
-                    java.util.Map.of("trap", "drill bloqué pendant la prep"));
             return false;
         }
+        long cooldownMs = plugin.configs().drillCooldownMs();
+        long now = System.currentTimeMillis();
+        Long last = lastUse.get(p.getUniqueId());
+        if (last != null && now - last < cooldownMs) {
+            plugin.version().sendActionBar(p, "&7Foreuse en recharge... &c"
+                    + ((cooldownMs - (now - last)) / 1000.0) + "s");
+            return false;
+        }
+        lastUse.put(p.getUniqueId(), now);
+
         Block target = e.getClickedBlock();
         if (target == null) {
             target = p.getTargetBlockExact(6);
             if (target == null) return false;
         }
         int broken = 0;
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dz = -1; dz <= 1; dz++) {
+        // 2x2x2 (8 blocs max) au lieu de 3x3x3 (27) — moins game-breaking
+        for (int dx = 0; dx <= 1; dx++) {
+            for (int dy = 0; dy <= 1; dy++) {
+                for (int dz = 0; dz <= 1; dz++) {
                     Block b = target.getRelative(dx, dy, dz);
                     if (b.getType() == Material.AIR || b.getType().isAir()) continue;
                     if (b.getType() == Material.BEDROCK) continue;

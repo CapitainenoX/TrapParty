@@ -93,7 +93,13 @@ public class SpecialItemManager {
         if (u == null || u < 0) return; // illimité
         int next = u - 1;
         if (next <= 0) {
-            stack.setAmount(0);
+            // Consomme un seul item de la stack (pas toute la stack)
+            int amt = stack.getAmount();
+            if (amt > 1) {
+                stack.setAmount(amt - 1);
+            } else {
+                stack.setAmount(0);
+            }
             plugin.version().sound(p, "ENTITY_ITEM_BREAK", 1f, 1.2f);
             return;
         }

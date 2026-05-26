@@ -63,10 +63,19 @@ public class ShopManager {
             List<ShopItem> items = new ArrayList<>();
             for (Map<?, ?> raw : s.getMapList("items")) {
                 Material mat = ItemBuilder.resolveMaterial(String.valueOf(raw.get("material")));
-                if (mat == null) continue;
-                int amt = raw.get("amount") instanceof Number n ? n.intValue() : 1;
-                int cost = raw.get("cost") instanceof Number n2 ? n2.intValue() : 0;
-                boolean free = raw.get("free") instanceof Boolean b && b;
+                if (mat == null) {
+                    plugin.getLogger().warning("shop.yml: unknown material '"
+                            + raw.get("material") + "' in category '" + id + "', skipping.");
+                    continue;
+                }
+                int amt = numberOrWarn(raw.get("amount"), 1, "amount", mat, id);
+                int cost = numberOrWarn(raw.get("cost"), 0, "cost", mat, id);
+                Object rawFree = raw.get("free");
+                boolean free = rawFree instanceof Boolean b && b;
+                if (rawFree != null && !(rawFree instanceof Boolean)) {
+                    plugin.getLogger().warning("shop.yml: 'free' for " + mat
+                            + " in " + id + " must be true/false, got " + rawFree);
+                }
                 String potion = raw.get("potion") != null ? raw.get("potion").toString() : null;
                 items.add(new ShopItem(mat, amt, cost, free, potion));
             }
@@ -148,6 +157,11 @@ public class ShopManager {
             }
             lastFreePickup.put(p.getUniqueId(), now);
         } else {
+            // Tire l'event public (cancellable) avant le débit
+            var ev = new fr.trapparty.api.events.TrapPartyShopPurchaseEvent(
+                    g, p, item.getMaterial().name(), item.getCost());
+            try { Bukkit.getPluginManager().callEvent(ev); } catch (Throwable ignored) {}
+            if (ev.isCancelled()) return;
             if (!plugin.economy().withdraw(p, gp, item.getCost())) {
                 plugin.messages().send(p, "shop.not-enough",
                         Map.of("amount", plugin.economy().format(item.getCost())));
@@ -193,6 +207,15 @@ public class ShopManager {
         lore.add(" ");
         lore.add(affordable ? "§a✓ Clique pour acheter" : "§c✗ Fonds insuffisants");
         return new ItemBuilder(it.toStack()).lore(lore).build();
+    }
+
+    private int numberOrWarn(Object o, int def, String field, Material mat, String cat) {
+        if (o instanceof Number n) return n.intValue();
+        if (o != null) {
+            plugin.getLogger().warning("shop.yml: '" + field + "' for " + mat
+                    + " in " + cat + " must be a number, got '" + o + "' — using " + def);
+        }
+        return def;
     }
 
     private boolean checkRateLimit(Player p) {

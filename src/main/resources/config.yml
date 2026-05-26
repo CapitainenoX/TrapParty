@@ -11,6 +11,8 @@ settings:
   auto-restart: true
   use-multiverse: true        # auto-détecté si plugin présent
   debug: false
+  audit-log: true             # plugins/TrapParty/logs/events-*.log (JSON-line)
+  metrics: true               # bStats anonymes (https://bstats.org)
 
 game:
   min-players: 2
@@ -26,9 +28,8 @@ game:
   rejoin-window: 60
   scoped-chat: true           # le chat des joueurs en partie n'est vu que par cette partie
   allowed-commands:           # commandes utilisables en partie (anti-cheat)
-    - tparty
-    - tp
-    - trapparty
+    - tparty                  # NOTE: `tp` n'est PAS dans la liste pour éviter
+    - trapparty               # de shadow la commande vanilla de téléportation
     - kit
     - shop
     - crafts
@@ -64,9 +65,12 @@ economy:
   #   coins  : utilise des pièces par partie (RAZ à chaque partie)
   # Si Vault est introuvable mais mode=vault, fallback automatique sur "coins".
   mode: vault
-  starting-coins: 50          # pièces de partie au join (ignoré en mode vault)
+  starting-coins: 50          # pièces de partie au join (mode coins)
+  # En mode vault : si le solde du joueur < starting-bonus, on lui crédite
+  # la différence pour qu'il ne débute pas à 0 face aux vétérans.
+  vault-min-balance: 100
   kill-reward: 25
-  trap-kill-bonus: 15
+  trap-kill-bonus: 5          # bonus piège, modéré pour éviter le farm trapmaster
   win-reward: 150
   participation: 25
   daily-streak-bonus: 20
@@ -117,6 +121,17 @@ performance:
   max-arenas: 16
   particle-distance: 64
   sound-distance: 48
+
+# Tunables internes (rate limits, debounces, TTL). Modifie uniquement si tu
+# sais ce que tu fais. Le défaut convient à 99% des serveurs.
+internals:
+  join-rate-limit-ms: 3000     # délai min entre 2 /tparty join du même joueur
+  create-rate-limit-ms: 10000  # délai min entre 2 créations de game sur la même arène
+  join-retry-max: 100          # tentatives max avant abandon (monde qui ne charge pas)
+  trap-trigger-ttl-ms: 5000    # fenêtre d'attribution d'un kill via piège
+  trap-trigger-purge-age-ms: 60000  # âge max avant purge des triggers stales
+  stats-flush-debounce-ms: 5000     # delai min entre 2 écritures stats.yml
+  drill-cooldown-ms: 1500           # cooldown entre 2 charges du SuperDrill
 
 resource-pack:
   # Active l'envoi automatique du resource pack TrapParty aux joueurs.

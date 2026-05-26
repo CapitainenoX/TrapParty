@@ -13,6 +13,8 @@ public abstract class FileConfiguration implements ConfigurationSection {
     @Override public int getInt(String p, int d){return d;}
     @Override public double getDouble(String p){return 0;}
     @Override public double getDouble(String p, double d){return d;}
+    @Override public long getLong(String p){return 0;}
+    @Override public long getLong(String p, long d){return d;}
     @Override public boolean getBoolean(String p){return false;}
     @Override public boolean getBoolean(String p, boolean d){return d;}
     @Override public List<String> getStringList(String p){return Collections.emptyList();}

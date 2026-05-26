@@ -19,14 +19,17 @@ public class MutationEvent implements GameEvent {
 
     @Override public void apply(Game game) {
         TrapPartyPlugin plugin = TrapPartyPlugin.get();
-        List<String> options = List.of("SPEED", "JUMP_BOOST", "STRENGTH", "INVISIBILITY", "REGENERATION");
+        // INVISIBILITY retirée : armure reste visible → déséquilibre kit + frustrant
+        List<String> options = List.of("SPEED", "JUMP_BOOST", "STRENGTH", "REGENERATION");
         String name = RandomUtil.pick(options);
         PotionEffectType type = fr.trapparty.util.EffectUtil.byName(name, "JUMP", "INCREASE_DAMAGE");
         if (type == null) return;
+        // Regeneration limitée à 10s pour ne pas faire de power-spike
+        int duration = name.equals("REGENERATION") ? 20 * 10 : 20 * 30;
         for (GamePlayer gp : game.getPlayers()) {
             Player p = Bukkit.getPlayer(gp.getUuid());
             if (p == null || !gp.isAlive()) continue;
-            p.addPotionEffect(new PotionEffect(type, 20 * 30, 1, true, false));
+            p.addPotionEffect(new PotionEffect(type, duration, 1, true, false));
         }
         plugin.messages().broadcastPlayers(onlinePlayersIn(game), "events.mutation",
                 Map.of("mutation", name.toLowerCase()));

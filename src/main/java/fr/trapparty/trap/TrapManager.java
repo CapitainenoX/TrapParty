@@ -13,8 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TrapManager {
 
-    private static final long TRIGGER_TTL_MS = 5_000L;
-    private static final long PURGE_MAX_AGE_MS = 60_000L;
+    // Overridable via config.yml > internals.*
+    private long triggerTtlMs() { return plugin.configs().trapTriggerTtlMs(); }
+    private long purgeMaxAgeMs() { return plugin.configs().trapTriggerPurgeMs(); }
 
     private final TrapPartyPlugin plugin;
     private final Map<String, Trap> trapsByBlock = new ConcurrentHashMap<>();
@@ -58,7 +59,7 @@ public class TrapManager {
     public Trap recentTriggerFor(UUID victim) {
         TrapTrigger t = lastTrigger.get(victim);
         if (t == null) return null;
-        if (System.currentTimeMillis() - t.when > TRIGGER_TTL_MS) {
+        if (System.currentTimeMillis() - t.when > triggerTtlMs()) {
             lastTrigger.remove(victim);
             return null;
         }
@@ -69,7 +70,7 @@ public class TrapManager {
     public Trap consumeTrigger(UUID victim) {
         TrapTrigger t = lastTrigger.remove(victim);
         if (t == null) return null;
-        if (System.currentTimeMillis() - t.when > TRIGGER_TTL_MS) return null;
+        if (System.currentTimeMillis() - t.when > triggerTtlMs()) return null;
         return t.trap;
     }
 
@@ -79,7 +80,7 @@ public class TrapManager {
     }
 
     private void purgeStaleTriggers() {
-        long cutoff = System.currentTimeMillis() - PURGE_MAX_AGE_MS;
+        long cutoff = System.currentTimeMillis() - purgeMaxAgeMs();
         lastTrigger.entrySet().removeIf(e -> e.getValue().when < cutoff);
     }
 

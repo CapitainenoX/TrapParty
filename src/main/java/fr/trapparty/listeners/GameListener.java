@@ -27,12 +27,10 @@ public class GameListener implements Listener {
         if (!(e.getEntity() instanceof Player victim)) return;
         Game g = plugin.games().forPlayer(victim);
         if (g == null) return;
-        if (g.getState() == GameState.PREPARATION && !g.getArena().isPvpInPrep()) {
-            e.setCancelled(true);
-            return;
-        }
-        if (g.getState() != GameState.COMBAT && g.getState() != GameState.SUDDEN_DEATH) {
-            e.setCancelled(true);
+        switch (g.getState()) {
+            case PREPARATION -> { if (!g.getArena().isPvpInPrep()) e.setCancelled(true); }
+            case COMBAT, SUDDEN_DEATH -> { /* allowed */ }
+            default -> e.setCancelled(true);
         }
     }
 

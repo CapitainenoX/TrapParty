@@ -35,20 +35,32 @@ public class KitSelectionGui {
 
     public void open(Player p) {
         List<Kit> kits = new ArrayList<>(plugin.kits().all());
+        if (kits.size() > KIT_SLOTS.length) {
+            plugin.getLogger().warning("Kits.yml a " + kits.size() + " kits mais le GUI ne peut en afficher que "
+                    + KIT_SLOTS.length + " — les " + (kits.size() - KIT_SLOTS.length) + " derniers sont cachés.");
+        }
+        // Récupère le kit actuel (s'il y en a un) pour le mettre en surbrillance
+        var game = plugin.games().forPlayer(p);
+        var gp = game != null ? game.getPlayer(p.getUniqueId()) : null;
+        Kit current = gp != null ? gp.getKit() : null;
+
         Inventory inv = Bukkit.createInventory(null, 54, GUI_TITLE_CHAR);
         Map<Integer, Kit> mapping = new HashMap<>();
         for (int i = 0; i < kits.size() && i < KIT_SLOTS.length; i++) {
             Kit k = kits.get(i);
             int slot = KIT_SLOTS[i];
+            boolean isCurrent = current != null && current.getId().equalsIgnoreCase(k.getId());
             List<String> lore = new ArrayList<>();
             lore.add(" ");
             lore.addAll(k.getDescription());
             lore.add(" ");
-            lore.add(k.canUse(p) ? "§a✓ Clique pour sélectionner" : "§c✗ Kit verrouillé");
-            inv.setItem(slot, new ItemBuilder(k.getIcon())
-                    .name(k.getDisplayName())
-                    .lore(lore)
-                    .build());
+            if (isCurrent) lore.add("§b★ Kit actuel");
+            else lore.add(k.canUse(p) ? "§a✓ Clique pour sélectionner" : "§c✗ Kit verrouillé");
+            ItemBuilder ib = new ItemBuilder(k.getIcon())
+                    .name((isCurrent ? "§b★ " : "") + k.getDisplayName())
+                    .lore(lore);
+            if (isCurrent) ib.glow();
+            inv.setItem(slot, ib.build());
             mapping.put(slot, k);
         }
         openInventories.add(p.getUniqueId());

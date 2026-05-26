@@ -8,6 +8,8 @@ public interface ConfigurationSection {
     int getInt(String path, int def);
     double getDouble(String path);
     double getDouble(String path, double def);
+    long getLong(String path);
+    long getLong(String path, long def);
     boolean getBoolean(String path);
     boolean getBoolean(String path, boolean def);
     List<String> getStringList(String path);

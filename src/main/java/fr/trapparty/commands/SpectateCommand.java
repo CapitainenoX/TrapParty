@@ -50,6 +50,9 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
         p.teleport(loc);
         p.setGameMode(GameMode.SPECTATOR);
         game.getSpectators().add(p.getUniqueId());
+        // Inscrit le spectateur côté manager pour que les listeners (chat scoping,
+        // anti-cheat commandes) le considèrent comme étant DANS une partie.
+        plugin.games().registerExternalSpectator(p.getUniqueId(), game);
         plugin.scoreboards().attach(game, p);
         plugin.bossbars().attach(game, p);
         sender.sendMessage("§aSpectate de §e" + game.getId());

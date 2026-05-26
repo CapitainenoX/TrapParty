@@ -14,7 +14,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -22,25 +21,14 @@ import java.util.UUID;
 public class PlayerListener implements Listener {
 
     private final TrapPartyPlugin plugin;
-    private final Set<String> commandWhitelist;
 
     public PlayerListener(TrapPartyPlugin plugin) {
         this.plugin = plugin;
-        // Whitelist des commandes utilisables en partie (anti-cheat de base).
-        List<String> raw = plugin.configs().root().getStringList("game.allowed-commands");
-        this.commandWhitelist = new HashSet<>();
-        if (raw.isEmpty()) {
-            // Défauts raisonnables si l'admin n'a pas configuré
-            commandWhitelist.add("tparty"); commandWhitelist.add("tp");
-            commandWhitelist.add("trapparty"); commandWhitelist.add("kit");
-            commandWhitelist.add("shop"); commandWhitelist.add("crafts");
-            commandWhitelist.add("special"); commandWhitelist.add("items");
-            commandWhitelist.add("spectate"); commandWhitelist.add("spec");
-            commandWhitelist.add("msg"); commandWhitelist.add("r");
-            commandWhitelist.add("tell"); commandWhitelist.add("w");
-        } else {
-            for (String s : raw) commandWhitelist.add(s.toLowerCase(Locale.ROOT));
-        }
+    }
+
+    /** Relue à chaque event pour bénéficier des hot-reload de config. */
+    private Set<String> currentCommandWhitelist() {
+        return plugin.configs().allowedCommandsInGame();
     }
 
     @EventHandler
@@ -66,6 +54,7 @@ public class PlayerListener implements Listener {
         plugin.scoreboards().detach(e.getPlayer());
         plugin.bossbars().detach(e.getPlayer());
         plugin.traps().forgetTrigger(uuid);
+        plugin.games().unregisterExternalSpectator(uuid);
         if (plugin.kits().gui() != null) plugin.kits().gui().handleClose(uuid);
         if (plugin.crafts() != null) plugin.crafts().handleClose(uuid);
     }
@@ -75,7 +64,7 @@ public class PlayerListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         if (p.hasPermission("trapparty.admin")) return;
-        Game g = plugin.games().forPlayer(p);
+        Game g = plugin.games().forAnyone(p.getUniqueId());
         if (g == null) return;
         String msg = e.getMessage();
         if (msg.length() < 2) return;
@@ -84,7 +73,7 @@ public class PlayerListener implements Listener {
         // strip eventual "plugin:cmd" prefix
         int colon = cmd.indexOf(':');
         if (colon >= 0) cmd = cmd.substring(colon + 1);
-        if (!commandWhitelist.contains(cmd)) {
+        if (!currentCommandWhitelist().contains(cmd)) {
             e.setCancelled(true);
             p.sendMessage("§cCette commande est désactivée en partie.");
         }
@@ -93,9 +82,9 @@ public class PlayerListener implements Listener {
     /** Chat scopé : les joueurs en partie ne parlent qu'aux autres dans la même partie. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent e) {
-        if (!plugin.configs().root().getBoolean("game.scoped-chat", true)) return;
+        if (!plugin.configs().scopedChat()) return;
         Player p = e.getPlayer();
-        Game g = plugin.games().forPlayer(p);
+        Game g = plugin.games().forAnyone(p.getUniqueId());
         if (g == null) return;
         Set<Player> recipients = new HashSet<>();
         for (GamePlayer gp : g.getPlayers()) {

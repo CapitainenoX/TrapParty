@@ -22,16 +22,21 @@ public class MeteorEvent implements GameEvent {
         Location center = LocationUtil.parse(game.world(), game.getArena().getCenterDef());
         if (center == null) return;
         new org.bukkit.scheduler.BukkitRunnable() {
-            int remaining = 8;
+            int remaining = 5;
             @Override public void run() {
-                if (remaining <= 0 || game.world() == null) { cancel(); return; }
+                // Cancel si le monde est mort (reset partie) ou si on n'est plus en COMBAT
+                if (remaining <= 0
+                        || game.world() == null
+                        || game.getState() != fr.trapparty.game.GameState.COMBAT) {
+                    cancel(); return;
+                }
                 for (int i = 0; i < 2 && remaining > 0; i++) {
                     double dx = (Math.random() - 0.5) * 40;
                     double dz = (Math.random() - 0.5) * 40;
                     Location spawn = center.clone().add(dx, 40, dz);
                     Fireball fb = game.world().spawn(spawn, Fireball.class);
                     fb.setVelocity(new Vector(0, -1, 0));
-                    fb.setYield(2.5f);
+                    fb.setYield(1.5f);
                     fb.setIsIncendiary(true);
                     remaining--;
                 }

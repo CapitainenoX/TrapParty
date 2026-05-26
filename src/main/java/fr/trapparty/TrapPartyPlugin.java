@@ -1,6 +1,7 @@
 package fr.trapparty;
 
 import fr.trapparty.arena.ArenaManager;
+import fr.trapparty.audit.AuditLogger;
 import fr.trapparty.commands.AdminCommand;
 import fr.trapparty.commands.CraftsCommand;
 import fr.trapparty.commands.KitCommand;
@@ -53,6 +54,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
     private BossBarManager bossBarManager;
     private HologramManager hologramManager;
     private CraftsGui craftsGui;
+    private AuditLogger auditLogger;
 
     @Override
     public void onEnable() {
@@ -65,6 +67,7 @@ public final class TrapPartyPlugin extends JavaPlugin {
         this.configManager = new ConfigManager(this);
         this.messagesManager = new MessagesManager(this);
 
+        this.auditLogger = new AuditLogger(this);
         this.economyService = new EconomyService(this);
         this.statsManager = new StatsManager(this);
         this.kitManager = new KitManager(this);
@@ -88,6 +91,9 @@ public final class TrapPartyPlugin extends JavaPlugin {
         // Hook PlaceholderAPI si présent (chargé après nous, donc Bukkit#getPluginManager#getPlugin OK)
         try { new PlaceholderHook(this).tryRegister(); }
         catch (Throwable t) { getLogger().fine("PAPI hook skipped: " + t.getMessage()); }
+        // bStats (relocaté pour éviter les conflicts avec d'autres plugins)
+        try { fr.trapparty.compat.BStatsHook.init(this); }
+        catch (Throwable t) { getLogger().fine("bStats skipped: " + t.getMessage()); }
 
         long elapsed = System.currentTimeMillis() - start;
         getLogger().info("TrapParty enabled in " + elapsed + "ms — server " + versionAdapter.describe());
@@ -165,4 +171,5 @@ public final class TrapPartyPlugin extends JavaPlugin {
     public BossBarManager bossbars() { return bossBarManager; }
     public HologramManager holograms() { return hologramManager; }
     public CraftsGui crafts() { return craftsGui; }
+    public AuditLogger audit() { return auditLogger; }
 }

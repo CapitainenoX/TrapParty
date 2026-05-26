@@ -72,4 +72,27 @@ public class ConfigManager {
     public int suddenBorder() { return config.getInt("arena.border.sudden-death-size", 25); }
 
     public int maxArenas() { return config.getInt("performance.max-arenas", 16); }
+
+    public java.util.Set<String> allowedCommandsInGame() {
+        java.util.List<String> raw = config.getStringList("game.allowed-commands");
+        if (raw.isEmpty()) {
+            return new java.util.HashSet<>(java.util.List.of(
+                    "tparty", "trapparty", "kit", "shop", "crafts", "special",
+                    "items", "spectate", "spec", "msg", "r", "tell", "w"));
+        }
+        java.util.Set<String> out = new java.util.HashSet<>();
+        for (String s : raw) out.add(s.toLowerCase(java.util.Locale.ROOT));
+        return out;
+    }
+
+    public boolean scopedChat() { return config.getBoolean("game.scoped-chat", true); }
+
+    // ---- internals tunables ----
+    public long joinRateLimitMs()  { return config.getLong("internals.join-rate-limit-ms", 3000); }
+    public long createRateLimitMs(){ return config.getLong("internals.create-rate-limit-ms", 10000); }
+    public int  joinRetryMax()     { return config.getInt("internals.join-retry-max", 100); }
+    public long trapTriggerTtlMs() { return config.getLong("internals.trap-trigger-ttl-ms", 5000); }
+    public long trapTriggerPurgeMs(){return config.getLong("internals.trap-trigger-purge-age-ms", 60000); }
+    public long statsFlushDebounceMs() { return config.getLong("internals.stats-flush-debounce-ms", 5000); }
+    public long drillCooldownMs()  { return config.getLong("internals.drill-cooldown-ms", 1500); }
 }

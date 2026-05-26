@@ -22,21 +22,20 @@ kits:
     icon: "NETHERITE_CHESTPLATE|DIAMOND_CHESTPLATE|IRON_CHESTPLATE"
     description:
       - "&7Très résistant"
-      - "&7Armure renforcée"
-      - "&7Lent mais robuste"
+      - "&7Armure renforcée + bouclier"
+      - "&7Contrôle de zone via knockback"
     permission: trapparty.kit.tank
     items:
       helmet: "IRON_HELMET:1:PROTECTION=2"
       chestplate: "IRON_CHESTPLATE:1:PROTECTION=2"
       leggings: "IRON_LEGGINGS:1:PROTECTION=2"
       boots: "IRON_BOOTS:1:FEATHER_FALLING=2"
-      mainhand: "IRON_SWORD:1:SHARPNESS=1"
+      mainhand: "IRON_SWORD:1:SHARPNESS=1,KNOCKBACK=2"
       offhand: SHIELD
       slot0: COOKED_BEEF:8
       slot1: COBBLESTONE:32
     effects:
       - DAMAGE_RESISTANCE:-1:0
-      - SLOWNESS:-1:0
 
   archer:
     display-name: "&a&lARCHER"
@@ -140,16 +139,20 @@ kits:
     icon: "NETHERITE_AXE|DIAMOND_AXE|IRON_AXE"
     description:
       - "&7Dégâts massifs"
-      - "&7Force permanente"
-      - "&7Aucune armure"
+      - "&7Force II + Speed I"
+      - "&7Armure légère cuir renforcée"
     permission: trapparty.kit.berserker
     items:
+      helmet: "LEATHER_HELMET:1:PROTECTION=1"
+      chestplate: "LEATHER_CHESTPLATE:1:PROTECTION=2"
+      leggings: "LEATHER_LEGGINGS:1:PROTECTION=1"
+      boots: "LEATHER_BOOTS:1:FEATHER_FALLING=2"
       mainhand: "IRON_AXE:1:SHARPNESS=3"
       slot0: "GOLDEN_APPLE:1"
       slot1: COOKED_BEEF:8
       slot2: "WIND_CHARGE|SNOWBALL:6"
     effects:
-      - STRENGTH:-1:0
+      - STRENGTH:-1:1
       - SPEED:-1:0
 
   # ---- Kits MC 1.21+ : utilisent les nouveaux items ----
@@ -168,7 +171,7 @@ kits:
       chestplate: "IRON_CHESTPLATE"
       leggings: "IRON_LEGGINGS"
       boots: "IRON_BOOTS:1:FEATHER_FALLING=4"
-      mainhand: "MACE|NETHERITE_AXE|IRON_AXE:1:DENSITY=3,BREACH=2,WIND_BURST=1,SHARPNESS=2"
+      mainhand: "MACE|NETHERITE_AXE|IRON_AXE:1:DENSITY=2,BREACH=2,WIND_BURST=1"
       slot0: "WIND_CHARGE|SNOWBALL:8"
       slot1: "ENCHANTED_GOLDEN_APPLE|GOLDEN_APPLE:1"
       slot2: COOKED_BEEF:6

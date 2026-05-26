@@ -23,7 +23,8 @@ public class StatsManager {
     private final File file;
     private FileConfiguration cfg;
     private long lastFlush = 0L;
-    private static final long FLUSH_DEBOUNCE_MS = 5_000;
+    // Overridable via config.yml > internals.stats-flush-debounce-ms
+    private long flushDebounceMs() { return plugin.configs().statsFlushDebounceMs(); }
     private final java.util.concurrent.atomic.AtomicBoolean dirty =
             new java.util.concurrent.atomic.AtomicBoolean(false);
     private final Object flushLock = new Object();
@@ -86,33 +87,36 @@ public class StatsManager {
                 .toList();
     }
 
+    /**
+     * Enregistre une victoire. Appelle interne `recordParticipation(true)`
+     * pour ne pas dépendre de l'ordre d'appel côté Game (et éviter le
+     * double-crédit).
+     */
     public void recordWin(UUID uuid, GamePlayer gp) {
         PlayerStats st = get(uuid);
         st.addWin();
-        st.addGame();
-        st.addKills(gp.getKills());
-        st.addTrapKills(gp.getTrapKills());
-        st.addCoins(gp.getCoins() + plugin.configs().winReward());
-        // MMR Elo simplifié : +25 sur win
         st.setMmr(st.getMmr() + 25);
-        // Crédit Vault si dispo
         Player p = Bukkit.getPlayer(uuid);
         if (p != null) plugin.economy().deposit(p, gp, plugin.configs().winReward());
-        markDirty();
+        recordParticipationInternal(uuid, gp, true);
     }
 
     public void recordParticipation(UUID uuid, GamePlayer gp) {
+        recordParticipationInternal(uuid, gp, false);
+    }
+
+    private void recordParticipationInternal(UUID uuid, GamePlayer gp, boolean alreadyWonRewards) {
         PlayerStats st = get(uuid);
         st.addGame();
         st.addKills(gp.getKills());
         st.addTrapKills(gp.getTrapKills());
         if (!gp.isAlive()) st.addDeath();
         st.addCoins(gp.getCoins());
-        // léger -5 mmr si non-vainqueur
-        st.setMmr(Math.max(0, st.getMmr() - 5));
-        // Crédit Vault de la prime de participation
-        Player p = Bukkit.getPlayer(uuid);
-        if (p != null) plugin.economy().deposit(p, gp, plugin.configs().participation());
+        if (!alreadyWonRewards) {
+            st.setMmr(Math.max(0, st.getMmr() - 5));
+            Player p = Bukkit.getPlayer(uuid);
+            if (p != null) plugin.economy().deposit(p, gp, plugin.configs().participation());
+        }
         markDirty();
     }
 
@@ -159,7 +163,7 @@ public class StatsManager {
 
     private void flushIfDue() {
         if (!dirty.get()) return;
-        if (System.currentTimeMillis() - lastFlush < FLUSH_DEBOUNCE_MS) return;
+        if (System.currentTimeMillis() - lastFlush < flushDebounceMs()) return;
         flush();
     }
 }

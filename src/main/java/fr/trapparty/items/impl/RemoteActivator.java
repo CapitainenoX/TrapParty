@@ -29,7 +29,7 @@ public class RemoteActivator implements SpecialItem {
     }
     @Override public String baseMaterial() { return "COMPASS"; }
     @Override public int maxUses() { return 1; }
-    @Override public int cost() { return 45; }
+    @Override public int cost() { return 75; }
     @Override public String shopCategory() { return "traps"; }
 
     @Override

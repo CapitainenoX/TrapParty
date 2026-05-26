@@ -75,9 +75,10 @@ public class PlaceholderHook {
                 case "kd" -> String.valueOf(st.getKd());
                 case "games" -> String.valueOf(st.getGamesPlayed());
                 case "coins_total" -> String.valueOf(st.getCoinsTotal());
-                case "balance" -> player.isOnline()
-                        ? plugin.economy().format(plugin.economy().balance(player.getPlayer(), gp))
-                        : "0";
+                case "balance" -> {
+                    org.bukkit.entity.Player online = player.getPlayer();
+                    yield online == null ? "0" : plugin.economy().format(plugin.economy().balance(online, gp));
+                }
                 case "game_state" -> g == null ? "" : g.getState().name();
                 case "game_arena" -> g == null ? "" : g.getArena().getDisplayName();
                 case "game_id" -> g == null ? "" : g.getId();

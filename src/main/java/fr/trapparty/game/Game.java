@@ -72,6 +72,8 @@ public class Game {
         GamePlayer gp = new GamePlayer(player);
         gp.snapshot(player);
         gp.setCoins(plugin.configs().startingCoins());
+        // En mode Vault, garantit un solde plancher pour les nouveaux joueurs
+        plugin.economy().ensureMinBalance(player);
         players.put(player.getUniqueId(), gp);
         joinedOrder.add(player.getUniqueId());
 
@@ -91,6 +93,7 @@ public class Game {
         plugin.scoreboards().attach(this, player);
         plugin.bossbars().attach(this, player);
 
+        fireJoinEvent(player);
         // démarrage auto si quorum
         if (state == GameState.WAITING && players.size() >= arena.getMinPlayers()) {
             startCountdown();
@@ -141,6 +144,14 @@ public class Game {
         if (state != GameState.WAITING && state != GameState.STARTING && state != GameState.PREPARATION) return;
         gp.setKit(kit);
         plugin.messages().send(player, "kit.selected", Map.of("kit", kit.getDisplayName()));
+    }
+
+    /** Tire l'event public TrapPartyPlayerJoinGameEvent (utilisé après join). */
+    private void fireJoinEvent(Player player) {
+        try {
+            Bukkit.getPluginManager().callEvent(
+                    new fr.trapparty.api.events.TrapPartyPlayerJoinGameEvent(this, player));
+        } catch (Throwable ignored) {}
     }
 
     // --------- Lifecycle ----------
@@ -195,6 +206,10 @@ public class Game {
         if (center != null) borderManager.shrink(world, arena.getBorderCombat(), Math.max(20, timer / 2));
         broadcastPrefixed("game.combat-start", null);
         forEach(p -> plugin.version().sendTitle(p, "&c&l⚔ COMBAT", "&7Survis au PvP !", 10, 60, 10));
+        try {
+            Bukkit.getPluginManager().callEvent(
+                    new fr.trapparty.api.events.TrapPartyGameStartEvent(this));
+        } catch (Throwable ignored) {}
     }
 
     private void startSuddenDeath() {
@@ -210,6 +225,10 @@ public class Game {
         this.winner = winnerUuid;
         state = GameState.ENDING;
         timer = plugin.configs().endTime();
+        try {
+            Bukkit.getPluginManager().callEvent(
+                    new fr.trapparty.api.events.TrapPartyGameEndEvent(this, winnerUuid));
+        } catch (Throwable ignored) {}
 
         if (winnerUuid != null) {
             GamePlayer gp = players.get(winnerUuid);
@@ -220,14 +239,18 @@ public class Game {
                 plugin.version().sound(p, p.getUniqueId().equals(winnerUuid)
                         ? "UI_TOAST_CHALLENGE_COMPLETE" : "ENTITY_PLAYER_LEVELUP", 1f, 1f);
             });
-            if (gp != null) plugin.stats().recordWin(winnerUuid, gp);
         } else {
             broadcastPrefixed("game.no-winner", null);
             forEach(p -> plugin.version().sound(p, "ENTITY_VILLAGER_DEATH", 1f, 1f));
         }
-        // Récap individuel pour chaque participant
+        // Récap individuel pour chaque participant (winner traité spécifiquement
+        // par recordWin qui n'appelle plus deux fois recordParticipation)
         for (GamePlayer gp : players.values()) {
-            plugin.stats().recordParticipation(gp.getUuid(), gp);
+            if (gp.getUuid().equals(winnerUuid)) {
+                plugin.stats().recordWin(gp.getUuid(), gp);
+            } else {
+                plugin.stats().recordParticipation(gp.getUuid(), gp);
+            }
             Player online = Bukkit.getPlayer(gp.getUuid());
             if (online == null) continue;
             online.sendMessage("§8§m                                        ");
@@ -243,6 +266,8 @@ public class Game {
     private void reset() {
         state = GameState.RESETTING;
         if (tickTask != null) { tickTask.cancel(); tickTask = null; }
+        // Annule les events runnables encore en vol qui pointent ce monde
+        plugin.events().clearGame(id);
         // tp tout le monde au lobby principal
         World fallback = Bukkit.getWorlds().get(0);
         for (GamePlayer gp : players.values()) {
@@ -261,8 +286,10 @@ public class Game {
         joinedOrder.clear();
         plugin.holograms().removeForGame(id);
         plugin.traps().clearGame(id);
-        // Détache immédiatement les mappings côté GameManager pour éviter
-        // toute fuite si un joueur quitte pendant le délai de cleanup.
+        // Marque le monde comme orphelin afin que les events asynchrones
+        // restant en vol arrêtent de spawn dans un monde déchargé.
+        World dead = world;
+        world = null;
         plugin.games().destroy(this);
 
         int delay = plugin.configs().root().getInt("arena.cleanup.delay-after-end", 10);
@@ -278,7 +305,12 @@ public class Game {
     }
 
     public void forceEnd() {
+        boolean noTick = (tickTask == null);
         endGame(null);
+        // Si on a force-end avant qu'un tick ne tourne (game restée en WAITING ou
+        // shutdown serveur), il faut faire le reset synchrone — sinon la game
+        // reste en ENDING ad vitam.
+        if (noTick) reset();
     }
 
     public void onPlayerDeath(Player victim, Player killer, boolean trapKill) {
@@ -286,17 +318,29 @@ public class Game {
         if (gv == null) return;
         gv.setAlive(false);
         setAsSpectator(victim, gv);
+        try {
+            Bukkit.getPluginManager().callEvent(
+                    new fr.trapparty.api.events.TrapPartyPlayerKillEvent(this, victim, killer, trapKill));
+        } catch (Throwable ignored) {}
 
         if (killer != null) {
             GamePlayer gk = players.get(killer.getUniqueId());
             if (gk != null) {
                 gk.addKill();
                 int reward = plugin.configs().killReward() + (trapKill ? plugin.configs().trapKillBonus() : 0);
-                // Route via EconomyService : Vault si actif, sinon pièces de partie.
                 plugin.economy().deposit(killer, gk, reward);
                 if (trapKill) gk.addTrapKill();
                 broadcastPrefixed(trapKill ? "game.player-trap-killed" : "game.player-killed",
                         Map.of("player", victim.getName(), "killer", killer.getName()));
+                plugin.audit().log("KILL", Map.of(
+                        "game", id, "killer", killer.getName(), "victim", victim.getName(),
+                        "trap", trapKill, "reward", reward));
+                // Feedback dramatique au killer : titre + son + actionbar
+                plugin.version().sendTitle(killer, "&c+1 KILL", "&7" + victim.getName(), 5, 25, 5);
+                plugin.version().sendActionBar(killer, "&7Kills: &c" + gk.getKills()
+                        + " &8| &6+" + reward + " §6"
+                        + plugin.economy().currencySymbol());
+                plugin.version().sound(killer, "ENTITY_PLAYER_LEVELUP", 1f, 1.5f);
             }
         } else {
             broadcastPrefixed("game.player-died", Map.of("player", victim.getName()));

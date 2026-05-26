@@ -10,7 +10,7 @@ softdepend: [Multiverse-Core, PlaceholderAPI, Vault]
 commands:
   trapparty:
     description: Main TrapParty command.
-    aliases: [tp, tparty]
+    aliases: [tparty]
     usage: /<command> help
   tpadmin:
     description: TrapParty admin tools.

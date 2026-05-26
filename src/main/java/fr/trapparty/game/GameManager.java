@@ -19,13 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GameManager {
 
-    private static final long JOIN_RATE_LIMIT_MS = 3_000;
-    private static final long CREATE_RATE_LIMIT_MS = 10_000;
-    private static final int JOIN_RETRY_MAX = 100; // ~5s max d'attente du monde
+    // Valeurs par défaut (overridable via config.yml > internals.*).
 
     private final TrapPartyPlugin plugin;
     private final Map<String, Game> gamesById = new ConcurrentHashMap<>();
     private final Map<UUID, Game> playerToGame = new ConcurrentHashMap<>();
+    private final Map<UUID, Game> spectatorToGame = new ConcurrentHashMap<>();
     private final Map<UUID, Long> lastJoinAttempt = new ConcurrentHashMap<>();
     private final Map<String, Long> lastArenaCreate = new ConcurrentHashMap<>();
 
@@ -39,6 +38,19 @@ public class GameManager {
 
     public Game forPlayer(Player p) { return playerToGame.get(p.getUniqueId()); }
 
+    /** Game si le joueur est joueur OU spectateur externe d'une partie. */
+    public Game forAnyone(UUID uuid) {
+        Game g = playerToGame.get(uuid);
+        return g != null ? g : spectatorToGame.get(uuid);
+    }
+
+    public void registerExternalSpectator(UUID uuid, Game g) {
+        spectatorToGame.put(uuid, g);
+    }
+    public void unregisterExternalSpectator(UUID uuid) {
+        spectatorToGame.remove(uuid);
+    }
+
     public Game get(String id) { return gamesById.get(id); }
 
     public Game findOrCreate(Arena arena) {
@@ -48,7 +60,7 @@ public class GameManager {
         if (gamesById.size() >= plugin.configs().maxArenas()) return null;
         long now = System.currentTimeMillis();
         Long last = lastArenaCreate.get(arena.getId());
-        if (last != null && now - last < CREATE_RATE_LIMIT_MS) return null;
+        if (last != null && now - last < plugin.configs().createRateLimitMs()) return null;
         lastArenaCreate.put(arena.getId(), now);
         return create(arena);
     }
@@ -92,7 +104,7 @@ public class GameManager {
         }
         long now = System.currentTimeMillis();
         Long last = lastJoinAttempt.put(p.getUniqueId(), now);
-        if (last != null && now - last < JOIN_RATE_LIMIT_MS) {
+        if (last != null && now - last < plugin.configs().joinRateLimitMs()) {
             p.sendMessage("§7Patiente avant de retenter.");
             return;
         }
@@ -127,7 +139,7 @@ public class GameManager {
             p.sendMessage(plugin.messages().prefix() + "§cCette partie n'existe plus.");
             return;
         }
-        if (attempt > JOIN_RETRY_MAX) {
+        if (attempt > plugin.configs().joinRetryMax()) {
             p.sendMessage(plugin.messages().prefix() + "§cLa partie n'a pas pu se charger à temps.");
             return;
         }
@@ -152,6 +164,9 @@ public class GameManager {
         gamesById.remove(game.getId());
         for (Map.Entry<UUID, Game> e : new HashMap<>(playerToGame).entrySet()) {
             if (e.getValue() == game) playerToGame.remove(e.getKey());
+        }
+        for (Map.Entry<UUID, Game> e : new HashMap<>(spectatorToGame).entrySet()) {
+            if (e.getValue() == game) spectatorToGame.remove(e.getKey());
         }
     }
 
