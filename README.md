@@ -243,11 +243,53 @@ partie. La devise affichée dans le shop suit le formatage Vault
 
 ## Roadmap (idées)
 
-- [ ] Mode équipes (toggle déjà dans `config.yml`).
-- [ ] Mode ranked complet (MMR Elo K-factor déjà câblé).
-- [ ] Quêtes journalières / succès.
-- [ ] Replay highlights.
-- [ ] Hook PlaceholderAPI.
+Features documentées dans `config.yml` mais pas (encore) implémentées :
+- [ ] Mode équipes (toggle `game.teams.enabled`)
+- [ ] Mode ranked complet (`ranked.*` — MMR Elo K-factor déjà câblé)
+- [ ] Vote de modificateurs avant combat (`modifiers-vote.*`)
+- [ ] Quêtes journalières (`rewards.daily-quests`)
+- [ ] Storage SQLite (`settings.storage: sqlite`)
+- [ ] Replay highlights
+- [ ] Snapshot d'inventaire persistant pour rejoin-window
+- [ ] Tests JUnit (les utils purs : ItemBuilder, LocationUtil, MessagesManager.color, EffectUtil)
+- [ ] CI GitHub Actions (build matrix Java 21 + release auto)
+
+Les features ci-dessus ont des clés de config réservées qui sont lues par
+nom mais n'ont pas (encore) de code derrière. Les défauts sont safe (off /
+disabled) — pas de bug. PRs bienvenues.
+
+## API (pour plugins tiers)
+
+TrapParty expose des events Bukkit publics dans `fr.trapparty.api.events` :
+
+| Event | Quand | Cancellable |
+|-------|-------|-------------|
+| `TrapPartyPlayerJoinGameEvent` | Joueur join une partie | non |
+| `TrapPartyGameStartEvent` | Transition PREP → COMBAT | non |
+| `TrapPartyPlayerKillEvent` | Kill (victim, killer, trapKill) | non |
+| `TrapPartyShopPurchaseEvent` | Avant débit du shop | **oui** |
+| `TrapPartyGameEndEvent` | Fin de partie (winner UUID, peut être null) | non |
+
+Exemple d'usage :
+
+```java
+@EventHandler
+public void onKill(TrapPartyPlayerKillEvent e) {
+    if (e.isTrapKill()) {
+        myQuestPlugin.creditQuest(e.getKiller(), "TRAP_MASTER");
+    }
+}
+```
+
+## Observabilité
+
+- **bStats** (anonyme) : enregistré sur `bstats.org` plugin id 27001
+  (à publier). Charts : parties actives, mode économie. Désactivable
+  via `settings.metrics: false`.
+- **Audit log** : `plugins/TrapParty/logs/events-YYYY-MM-DD.log`
+  (JSON-line). Wired pour les KILL ; ajouter dans d'autres endroits si
+  besoin via `plugin.audit().log(type, Map.of(...))`. Désactivable via
+  `settings.audit-log: false`.
 
 ## Licence
 
