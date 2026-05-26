@@ -1,0 +1,5 @@
+package org.bukkit.plugin;
+public class PluginDescriptionFile {
+    public String getVersion(){return "";}
+    public String getName(){return "";}
+}

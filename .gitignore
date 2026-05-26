@@ -13,3 +13,4 @@ out/
 dependency-reduced-pom.xml
 trapparty-pack.zip
 javac.*.args
+stubs/out/
